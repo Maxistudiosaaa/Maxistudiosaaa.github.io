@@ -1,338 +1,343 @@
-import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Zap, ShieldAlert, Hammer, Box, Activity, Power } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { AlertTriangle, Zap, Thermometer, Droplet, Activity, Box, RotateCcw, Lock } from 'lucide-react';
 
-const NuclearPlantSim = () => {
-  // Estado del Juego
-  const [reactorTemp, setReactorTemp] = useState(30); // 0 a 100
-  const [reactorPower, setReactorPower] = useState(20); // 0 a 100
-  const [coolantLevel, setCoolantLevel] = useState(100); // 0 a 100
-  const [valveOpen, setValveOpen] = useState(false); // ON/OFF
-  const [transformers, setTransformers] = useState([
-    { id: 1, active: true, health: 100 },
-    { id: 2, active: true, health: 100 },
-  ]);
-  const [exploded, setExploded] = useState(false);
-  const [logs, setLogs] = useState<string[]>(["Sistema iniciado. Esperando comandos..."]);
-
-  // Constantes de equilibrio
-  const COOLANT_DRAIN_RATE = 0.8;
-  const COOLING_POWER = 1.5;
-  const REFILL_AMOUNT = 5;
-
-  // Función para añadir logs
-  const addLog = (msg: string) => {
-    setLogs(prev => [msg, ...prev].slice(0, 5));
-  };
-
-  // Bucle principal del juego (1 tick cada 500ms)
-  useEffect(() => {
-    if (exploded) return;
-
-    const timer = setInterval(() => {
-      // 1. Verificar Electricidad
-      const activeTransformers = transformers.filter(t => t.active).length;
-      const totalBlackout = activeTransformers === 0;
-      
-      // 2. Lógica de Temperatura
-      setReactorTemp(prevTemp => {
-        let change = 0;
-
-        // Calor base por potencia
-        change += (reactorPower / 10); 
-
-        // Penalización por Blackout
-        if (totalBlackout) {
-           change += 2.5; 
-        }
-
-        // Enfriamiento
-        if (valveOpen && coolantLevel > 0) {
-          change -= COOLING_POWER;
-          setCoolantLevel(prev => Math.max(0, prev - COOLANT_DRAIN_RATE));
-        } else {
-          change += 0.5; // Calentamiento pasivo si no hay flujo
-        }
-
-        return Math.max(20, Math.min(120, prevTemp + change));
-      });
-
-      // 3. Chequear Explosión
-      setReactorTemp(currentTemp => {
-        if (currentTemp >= 100 && !exploded) {
-          setExploded(true);
-          addLog("¡CRÍTICO! MELTDOWN INMINENTE. EL NÚCLEO HA EXPLOTADO.");
-        }
-        return currentTemp;
-      });
-
-    }, 500);
-
-    return () => clearInterval(timer);
-  }, [valveOpen, coolantLevel, reactorPower, transformers, exploded]);
-
-  // Acciones del Usuario
-  const toggleValve = () => {
-    const isPowerOut = transformers.every(t => !t.active);
-    if (isPowerOut) return; 
-    setValveOpen(!valveOpen);
-    addLog(valveOpen ? "Válvula de refrigeración CERRADA." : "Válvula de refrigeración ABIERTA.");
-  };
-
-  const adjustPower = (amount: number) => {
-    setReactorPower(prev => {
-      const newVal = Math.max(0, Math.min(100, prev + amount));
-      addLog(`Potencia del núcleo ajustada a ${newVal}%`);
-      return newVal;
-    });
-  };
-
-  const refillCoolant = () => {
-    setCoolantLevel(prev => {
-      const newVal = Math.min(100, prev + REFILL_AMOUNT);
-      addLog("Caja de refrigerante añadida (+5%)");
-      return newVal;
-    });
-  };
-
-  const sabotageTransformer = (id: number) => {
-    setTransformers(prev => prev.map(t => 
-      t.id === id ? { ...t, active: false, health: 0 } : t
-    ));
-    addLog(`¡ALERTA! Transformador ${id} destruido por C4.`);
-  };
-
-  const repairTransformer = (id: number) => {
-    setTransformers(prev => prev.map(t => 
-      t.id === id ? { ...t, active: true, health: 100 } : t
-    ));
-    addLog(`Transformador ${id} reparado y operativo.`);
-  };
-
-  // Helpers visuales
-  const isBlackout = () => transformers.every(t => !t.active);
+const NuclearControlPanel = () => {
+  // --- ESTADOS DEL SISTEMA ---
   
-  const getTempColor = () => {
-    if (reactorTemp < 50) return "text-green-500";
-    if (reactorTemp < 80) return "text-yellow-500";
-    return "text-red-600 animate-pulse";
+  // 1. Reactor Nuclear & Core
+  const [heat, setHeat] = useState(20); // 0 a 100
+  const [power, setPower] = useState(30); // 0 a 100
+  const [meltdown, setMeltdown] = useState(false);
+
+  // 2. Sistema de Coolant
+  const [coolantLevel, setCoolantLevel] = useState(100); // 0 a 100
+  const [valveOpen, setValveOpen] = useState(true); // ON/OFF
+
+  // 3. Sistema Eléctrico (Transformadores)
+  // true = funcionando, false = destruido
+  const [trans1Alive, setTrans1Alive] = useState(true);
+  const [trans2Alive, setTrans2Alive] = useState(true);
+
+  // Estados derivados
+  const blackout = !trans1Alive || !trans2Alive; // 5.2 Si explota uno: Apagón total
+  
+  // Referencia para el loop del juego
+  const loopRef = useRef(null);
+
+  // --- LÓGICA DEL BUCLE PRINCIPAL (GAME LOOP) ---
+  useEffect(() => {
+    if (meltdown) return;
+
+    const tickRate = 1000; // 1 segundo por tick
+
+    loopRef.current = setInterval(() => {
+      setHeat((prevHeat) => {
+        let heatChange = 0;
+
+        // 1.2 Sistema de Temperatura: Aumenta si...
+        
+        // Factor base por potencia (Más potencia = más calor)
+        heatChange += power * 0.05;
+
+        // Factor Coolant
+        const hasCoolantFlow = valveOpen && coolantLevel > 0;
+        
+        if (hasCoolantFlow) {
+          // El coolant enfría el sistema
+          heatChange -= 2.5; 
+          // Consumo de coolant
+          setCoolantLevel(prev => Math.max(0, prev - (power * 0.02) - 0.5));
+        } else {
+          // 1.2 La válvula está cerrada o no hay coolant = Calor sube rápido
+          heatChange += 3.0;
+        }
+
+        // 1.2 Fallos eléctricos severos (Transformadores rotos generan inestabilidad)
+        if (blackout) {
+          heatChange += 1.5;
+        }
+
+        // Calcular nuevo calor
+        let newHeat = prevHeat + heatChange;
+
+        // Límites
+        if (newHeat < 0) newHeat = 0;
+        
+        // 1.3 Umbral Crítico
+        if (newHeat >= 100) {
+          setMeltdown(true);
+          return 100;
+        }
+
+        return parseFloat(newHeat.toFixed(1));
+      });
+
+    }, tickRate);
+
+    return () => clearInterval(loopRef.current);
+  }, [power, valveOpen, coolantLevel, blackout, meltdown]);
+
+  // --- ACCIONES DEL JUGADOR ---
+
+  const handlePowerChange = (amount) => {
+    if (blackout) return; // Difícil controlar sin luz, pero opcional
+    setPower(prev => Math.min(100, Math.max(0, prev + amount)));
+  };
+
+  const toggleValve = () => {
+    setValveOpen(!valveOpen);
+  };
+
+  const addCoolantBox = () => {
+    // 4.2 Cada caja agrega 5% del coolant total
+    setCoolantLevel(prev => Math.min(100, prev + 5));
+  };
+
+  const sabotageTransformer = (id) => {
+    // 5.2 Destrucción por C4
+    if (id === 1) setTrans1Alive(false);
+    if (id === 2) setTrans2Alive(false);
+  };
+
+  const repairTransformer = (id) => {
+    // 5.3 Recuperación manual
+    if (id === 1) setTrans1Alive(true);
+    if (id === 2) setTrans2Alive(true);
+  };
+
+  const resetSimulation = () => {
+    setHeat(20);
+    setPower(30);
+    setCoolantLevel(100);
+    setValveOpen(true);
+    setTrans1Alive(true);
+    setTrans2Alive(true);
+    setMeltdown(false);
   };
 
   // --- RENDERIZADO ---
 
-  // Pantalla de Game Over
-  if (exploded) {
+  if (meltdown) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen w-full bg-black text-red-600 p-8 font-mono border-8 border-red-600">
-        <ShieldAlert size={120} className="mb-6 animate-bounce" />
-        <h1 className="text-6xl font-bold text-center mb-4">MELTDOWN TOTAL</h1>
-        <p className="text-2xl text-center mb-8">El núcleo alcanzó el 100% de temperatura.</p>
-        <div className="bg-red-900/20 p-6 rounded border border-red-600 text-center">
-          <p className="text-xl mb-2">Radio de destrucción: TOTAL</p>
-          <p className="text-xl">Personal perdido: TODOS</p>
+      <div className="flex flex-col items-center justify-center h-screen bg-red-950 text-white animate-pulse p-4 text-center">
+        <AlertTriangle size={120} className="mb-6 text-red-500" />
+        <h1 className="text-6xl font-bold mb-4">MELTDOWN TOTAL</h1>
+        <p className="text-2xl mb-8">EL NÚCLEO HA EXPLOTADO. EVACUACIÓN FALLIDA.</p>
+        <div className="bg-black/50 p-6 rounded-lg border border-red-500 mb-8 max-w-lg">
+          <p className="text-lg">Causa: Temperatura alcanzó 100%.</p>
+          <p className="text-sm text-gray-300 mt-2">Consecuencia: Destrucción total de la planta y radio circundante.</p>
         </div>
         <button 
-          onClick={() => window.location.reload()}
-          className="mt-12 px-8 py-4 bg-red-600 text-black font-bold text-xl hover:bg-red-500 rounded"
+          onClick={resetSimulation}
+          className="px-8 py-4 bg-white text-red-900 font-bold rounded hover:bg-gray-200 transition text-xl flex items-center gap-2"
         >
-          REINICIAR SIMULACIÓN
+          <RotateCcw /> REINICIAR SISTEMA
         </button>
       </div>
     );
   }
 
-  // Pantalla Principal
   return (
-    <div className={`min-h-screen font-mono transition-colors duration-1000 ${isBlackout() ? 'bg-black text-gray-600' : 'bg-slate-900 text-slate-100'}`}>
+    <div className={`min-h-screen p-4 transition-all duration-1000 ${blackout ? 'bg-gray-900 brightness-50' : 'bg-slate-900'} text-slate-100 font-mono`}>
       
-      {/* Header Status */}
-      <header className={`p-4 border-b-4 flex justify-between items-center ${isBlackout() ? 'border-gray-800' : 'border-blue-500 bg-slate-800'}`}>
+      {/* HEADER */}
+      <header className="mb-6 flex justify-between items-center border-b border-slate-700 pb-4">
         <div className="flex items-center gap-3">
-          <Activity className={isBlackout() ? 'text-gray-600' : 'text-blue-400'} />
-          <h1 className="text-xl font-bold tracking-widest">SISTEMA DE CONTROL NUCLEAR v1.2</h1>
+          <Activity className={`${heat > 80 ? 'text-red-500 animate-pulse' : 'text-blue-400'}`} />
+          <h1 className="text-2xl font-bold tracking-wider">SISTEMA DE CONTROL DE REACTOR</h1>
         </div>
-        <div className={`px-4 py-1 rounded font-bold ${reactorTemp > 80 ? 'bg-red-600 text-white animate-pulse' : 'bg-green-600 text-white'}`}>
-          ESTADO: {reactorTemp > 80 ? 'CRÍTICO' : reactorTemp > 50 ? 'INESTABLE' : 'ESTABLE'}
+        <div className="flex gap-4">
+          <div className={`px-4 py-1 rounded text-sm font-bold ${blackout ? 'bg-red-900 text-red-200' : 'bg-green-900 text-green-200'}`}>
+            ESTADO DE RED: {blackout ? 'CRÍTICO / BLACKOUT' : 'NOMINAL'}
+          </div>
+          <div className={`px-4 py-1 rounded text-sm font-bold ${heat > 80 ? 'bg-red-600 text-white animate-bounce' : heat > 50 ? 'bg-yellow-600 text-white' : 'bg-blue-900 text-blue-200'}`}>
+            TEMP: {heat.toFixed(1)}%
+          </div>
         </div>
       </header>
 
-      {/* Main Grid */}
-      <main className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        {/* 1. REACTOR CORE */}
-        <div className={`border-2 rounded-lg p-4 relative overflow-hidden ${isBlackout() ? 'border-gray-800 bg-gray-900' : 'border-slate-600 bg-slate-800/50'}`}>
-          <div className="absolute top-2 right-2 opacity-20">
+        {/* 1. & 2. PANEL DEL NÚCLEO */}
+        <div className="col-span-1 md:col-span-2 lg:col-span-1 bg-slate-800 rounded-xl border-2 border-slate-600 p-4 shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-2 opacity-20">
             <Activity size={100} />
           </div>
-          <h2 className="text-2xl font-bold mb-6 border-b border-gray-600 pb-2 flex items-center gap-2">
-            <span className="text-red-500">01.</span> NÚCLEO (CORE)
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-blue-300">
+            <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
+            CORE CONTROL (2.2)
           </h2>
-
-          {/* Temperature Gauge */}
-          <div className="mb-8 text-center">
-            <p className="text-sm text-gray-400 mb-2">TEMPERATURA ACTUAL</p>
-            <div className={`text-6xl font-bold transition-all ${getTempColor()}`}>
-              {reactorTemp.toFixed(1)}°C
+          
+          {/* Heat Display */}
+          <div className="mb-6">
+            <div className="flex justify-between mb-1">
+              <span>Temperatura del Núcleo</span>
+              <span className={`font-bold ${heat > 80 ? 'text-red-500' : 'text-white'}`}>{heat.toFixed(1)}%</span>
             </div>
-            <div className="w-full bg-gray-700 h-4 mt-4 rounded-full overflow-hidden border border-gray-500">
+            <div className="w-full bg-slate-900 rounded-full h-6 border border-slate-700 overflow-hidden">
               <div 
-                className={`h-full transition-all duration-300 ${reactorTemp > 80 ? 'bg-red-600' : 'bg-green-500'}`}
-                style={{ width: `${Math.min(100, reactorTemp)}%` }}
+                className={`h-full transition-all duration-300 ${heat > 80 ? 'bg-red-600' : heat > 50 ? 'bg-yellow-500' : 'bg-blue-500'}`}
+                style={{ width: `${heat}%` }}
               ></div>
             </div>
-            <p className="text-xs text-red-500 mt-1 text-right">Peligro a los 100°C</p>
+            {heat > 80 && <p className="text-red-400 text-xs mt-1 animate-pulse">¡PELIGRO DE MELTDOWN!</p>}
           </div>
 
-          {/* Power Controls */}
-          <div className="space-y-4">
-            <p className="text-sm text-gray-400">POTENCIA DE SALIDA: {reactorPower}%</p>
-            <div className="flex gap-2">
-              <button 
-                onClick={() => adjustPower(-10)}
-                className={`flex-1 p-4 rounded border-2 font-bold transition-all ${isBlackout() ? 'border-gray-700 text-gray-700' : 'border-yellow-600 text-yellow-500 hover:bg-yellow-600/20'}`}
-              >
-                DISMINUIR (-)
-              </button>
-              <button 
-                onClick={() => adjustPower(10)}
-                className={`flex-1 p-4 rounded border-2 font-bold transition-all ${isBlackout() ? 'border-gray-700 text-gray-700' : 'border-red-600 text-red-500 hover:bg-red-600/20'}`}
-              >
-                AUMENTAR (+)
-              </button>
+          {/* Power Display */}
+          <div className="mb-6">
+            <div className="flex justify-between mb-1">
+              <span>Nivel de Potencia</span>
+              <span>{power}%</span>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              * Aumentar potencia sube temperatura.
-              <br/>* Disminuir ayuda a estabilizar.
-            </p>
+            <div className="w-full bg-slate-900 rounded-full h-4 border border-slate-700">
+              <div 
+                className="bg-purple-500 h-full rounded-full transition-all duration-300" 
+                style={{ width: `${power}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="grid grid-cols-2 gap-4">
+            <button 
+              onClick={() => handlePowerChange(-10)}
+              className="bg-slate-700 hover:bg-slate-600 border-b-4 border-slate-900 active:border-b-0 py-3 rounded text-sm font-bold transition-all"
+            >
+              DECREASE POWER
+            </button>
+            <button 
+              onClick={() => handlePowerChange(10)}
+              className="bg-purple-700 hover:bg-purple-600 border-b-4 border-purple-900 active:border-b-0 py-3 rounded text-sm font-bold transition-all"
+            >
+              INCREASE POWER
+            </button>
           </div>
         </div>
 
-        {/* 2. COOLANT SYSTEM */}
-        <div className={`border-2 rounded-lg p-4 relative ${isBlackout() ? 'border-gray-800 bg-gray-900' : 'border-blue-900 bg-slate-800/50'}`}>
-          <h2 className="text-2xl font-bold mb-6 border-b border-gray-600 pb-2 flex items-center gap-2">
-            <span className="text-blue-500">02.</span> REFRIGERACIÓN
+        {/* 3. & 4. SISTEMA DE COOLANT */}
+        <div className="col-span-1 bg-slate-800 rounded-xl border-2 border-slate-600 p-4 shadow-lg relative">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-cyan-300">
+            <Droplet size={20} />
+            COOLANT SYSTEM (3.0 & 4.0)
           </h2>
 
-          {/* Tank Visual */}
-          <div className="flex justify-center mb-6">
-            <div className="relative w-24 h-48 border-4 border-blue-500/50 rounded-lg bg-gray-900 overflow-hidden">
+          {/* Tank Level */}
+          <div className="flex items-end gap-4 h-32 mb-4 bg-slate-900 p-4 rounded-lg border border-slate-700 justify-center">
+            <div className="w-16 h-full bg-slate-800 rounded-lg relative border border-slate-600 overflow-hidden">
               <div 
-                className="absolute bottom-0 w-full bg-blue-500 transition-all duration-500 opacity-80"
+                className="absolute bottom-0 w-full bg-cyan-500 transition-all duration-300 opacity-80"
                 style={{ height: `${coolantLevel}%` }}
               >
-                <div className="w-full h-2 bg-blue-300 opacity-50 animate-pulse"></div>
+                {/* Bubble effect simulation */}
+                <div className="w-full h-full animate-pulse bg-cyan-400 opacity-30"></div>
               </div>
-              <div className="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md z-10">
-                {Math.round(coolantLevel)}%
-              </div>
+            </div>
+            <div className="flex flex-col justify-between h-full py-2">
+              <span className="text-2xl font-bold text-cyan-400">{coolantLevel.toFixed(0)}%</span>
+              <span className="text-xs text-slate-400">TANK LEVEL</span>
             </div>
           </div>
 
           {/* Valve Control */}
-          <div className="mb-6">
-            <p className="text-sm text-gray-400 mb-2">VÁLVULA DE FLUJO</p>
-            <button
+          <div className="flex items-center justify-between bg-slate-700 p-3 rounded mb-4">
+            <div>
+              <p className="font-bold">Coolant Rod / Valve</p>
+              <p className={`text-xs ${valveOpen ? 'text-green-400' : 'text-red-400'}`}>
+                STATUS: {valveOpen ? 'OPEN (FLOWING)' : 'CLOSED (STAGNANT)'}
+              </p>
+            </div>
+            <button 
               onClick={toggleValve}
-              disabled={isBlackout()}
-              className={`w-full p-4 rounded font-bold flex items-center justify-center gap-3 border-2 transition-all
-                ${valveOpen 
-                  ? 'bg-green-900/30 border-green-500 text-green-400' 
-                  : 'bg-red-900/30 border-red-500 text-red-400'}
-                ${isBlackout() ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02]'}
-              `}
+              className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out ${valveOpen ? 'bg-green-500' : 'bg-red-500'}`}
             >
-              <Power size={20} />
-              {valveOpen ? "ESTADO: ABIERTA (ON)" : "ESTADO: CERRADA (OFF)"}
+              <div className={`bg-white w-4 h-4 rounded-full shadow-md transform duration-200 ease-in-out ${valveOpen ? 'translate-x-6' : 'translate-x-0'}`}></div>
             </button>
-            {valveOpen && coolantLevel > 0 && (
-              <p className="text-xs text-blue-400 mt-1 text-center animate-pulse">Fluyendo coolant...</p>
-            )}
           </div>
 
-          {/* Refill Action */}
+          {/* Refill Mechanic */}
           <button 
-            onClick={refillCoolant}
-            className={`w-full py-3 px-4 rounded border border-dashed border-gray-500 flex items-center justify-center gap-2 
-              ${isBlackout() ? 'text-gray-600 hover:bg-gray-800' : 'text-gray-300 hover:bg-slate-700 hover:border-white'}
-            `}
+            onClick={addCoolantBox}
+            disabled={coolantLevel >= 100}
+            className="w-full bg-cyan-800 hover:bg-cyan-700 disabled:opacity-50 border border-cyan-500 py-2 rounded flex items-center justify-center gap-2 transition"
           >
-            <Box size={18} />
-            Traer Caja (+5% Coolant)
+            <Box size={16} /> Agregar Caja (+5%)
           </button>
         </div>
 
-        {/* 3. ELECTRICAL GRID */}
-        <div className={`border-2 rounded-lg p-4 ${isBlackout() ? 'border-gray-800 bg-gray-900' : 'border-yellow-900 bg-slate-800/50'}`}>
-          <h2 className="text-2xl font-bold mb-6 border-b border-gray-600 pb-2 flex items-center gap-2">
-            <span className="text-yellow-500">03.</span> ELÉCTRICO
+        {/* 5. TRANSFORMADORES ELÉCTRICOS */}
+        <div className="col-span-1 bg-slate-800 rounded-xl border-2 border-slate-600 p-4 shadow-lg">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-yellow-300">
+            <Zap size={20} />
+            POWER GRID (5.0)
           </h2>
 
-          {isBlackout() && (
-            <div className="bg-red-900/50 border border-red-500 p-3 mb-4 rounded text-center animate-pulse text-red-200 font-bold">
-              ¡APAGÓN TOTAL DETECTADO!
-              <p className="text-xs font-normal mt-1">Temp. subiendo rápidamente. Controles comprometidos.</p>
-            </div>
-          )}
-
           <div className="space-y-4">
-            {transformers.map((t) => (
-              <div key={t.id} className={`p-4 rounded border flex justify-between items-center ${t.active ? 'bg-slate-700 border-green-500' : 'bg-black border-red-600'}`}>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Zap size={18} className={t.active ? "text-yellow-400" : "text-gray-600"} />
-                    <span className={`font-bold ${t.active ? 'text-white' : 'text-red-500'}`}>
-                      T-{t.id}
-                    </span>
-                  </div>
-                  <span className="text-xs text-gray-400">{t.active ? "OPERATIVO" : "DESTRUIDO"}</span>
-                </div>
-                
-                <div>
-                  {t.active ? (
-                    <button 
-                      onClick={() => sabotageTransformer(t.id)}
-                      className="bg-red-900/20 hover:bg-red-900/50 text-red-500 border border-red-900 px-3 py-1 rounded text-xs flex items-center gap-1"
-                      title="Colocar C4"
-                    >
-                      <AlertTriangle size={12} /> SABOTEAR
-                    </button>
-                  ) : (
-                    <button 
-                      onClick={() => repairTransformer(t.id)}
-                      className="bg-blue-900/20 hover:bg-blue-900/50 text-blue-400 border border-blue-900 px-3 py-1 rounded text-xs flex items-center gap-1"
-                      title="Reparar"
-                    >
-                      <Hammer size={12} /> REPARAR
-                    </button>
-                  )}
-                </div>
+            {/* Transformer 1 */}
+            <div className={`p-3 rounded border ${trans1Alive ? 'bg-slate-700 border-green-500' : 'bg-red-900/30 border-red-500'}`}>
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-bold">Transformador #1</span>
+                {trans1Alive ? 
+                  <span className="text-green-400 text-xs bg-green-900/50 px-2 py-0.5 rounded">ONLINE</span> : 
+                  <span className="text-red-400 text-xs bg-red-900/50 px-2 py-0.5 rounded animate-pulse">DESTROYED</span>
+                }
               </div>
-            ))}
-          </div>
-          
-          <div className="mt-6 p-3 bg-black/30 rounded text-xs text-gray-400">
-            <p>ADVERTENCIA:</p>
-            <p>- La pérdida de ambos transformadores causa fallo en sistemas de enfriamiento.</p>
-            <p>- Blackout aumenta la generación de calor crítico.</p>
-          </div>
-        </div>
-
-      </main>
-
-      {/* Logs Footer */}
-      <footer className="max-w-7xl mx-auto px-6 pb-6">
-        <div className="bg-black border border-gray-700 p-3 rounded font-mono text-sm h-32 overflow-y-auto shadow-inner">
-          <p className="text-gray-500 border-b border-gray-800 mb-2 pb-1">REGISTRO DEL SISTEMA:</p>
-          {logs.map((log, i) => (
-            <div key={i} className="mb-1">
-              <span className="text-blue-500 mr-2">[{new Date().toLocaleTimeString()}]</span>
-              <span className="text-green-400">{log}</span>
+              <div className="flex gap-2">
+                {trans1Alive ? (
+                  <button onClick={() => sabotageTransformer(1)} className="flex-1 bg-red-900 hover:bg-red-800 text-xs py-1 rounded text-red-200">
+                    SABOTEAR (C4)
+                  </button>
+                ) : (
+                  <button onClick={() => repairTransformer(1)} className="flex-1 bg-green-700 hover:bg-green-600 text-xs py-1 rounded text-white flex justify-center items-center gap-1">
+                    <RotateCcw size={12} /> REPARAR
+                  </button>
+                )}
+              </div>
             </div>
-          ))}
-        </div>
-      </footer>
 
+            {/* Transformer 2 */}
+            <div className={`p-3 rounded border ${trans2Alive ? 'bg-slate-700 border-green-500' : 'bg-red-900/30 border-red-500'}`}>
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-bold">Transformador #2</span>
+                {trans2Alive ? 
+                  <span className="text-green-400 text-xs bg-green-900/50 px-2 py-0.5 rounded">ONLINE</span> : 
+                  <span className="text-red-400 text-xs bg-red-900/50 px-2 py-0.5 rounded animate-pulse">DESTROYED</span>
+                }
+              </div>
+              <div className="flex gap-2">
+                {trans2Alive ? (
+                  <button onClick={() => sabotageTransformer(2)} className="flex-1 bg-red-900 hover:bg-red-800 text-xs py-1 rounded text-red-200">
+                    SABOTEAR (C4)
+                  </button>
+                ) : (
+                  <button onClick={() => repairTransformer(2)} className="flex-1 bg-green-700 hover:bg-green-600 text-xs py-1 rounded text-white flex justify-center items-center gap-1">
+                    <RotateCcw size={12} /> REPARAR
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* System Status Summary */}
+            <div className="mt-4 p-2 bg-black/40 rounded text-xs text-center border border-slate-700">
+              {blackout ? (
+                <p className="text-red-400 flex items-center justify-center gap-2">
+                  <Lock size={12} /> SISTEMAS AUXILIARES CAÍDOS
+                </p>
+              ) : (
+                <p className="text-green-400">RED ELÉCTRICA ESTABLE</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* FOOTER / LEYENDA */}
+      <div className="mt-8 text-slate-500 text-xs flex justify-between">
+        <p>SIMULACIÓN DE PROTOCOLOS DE EMERGENCIA v1.0</p>
+        <p>SISTEMAS DE REFRIGERACIÓN: CRÍTICO</p>
+      </div>
     </div>
   );
 };
 
-export default NuclearPlantSim;
+export default NuclearControlPanel;
