@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { AlertTriangle, Zap, Thermometer, Droplet, ShieldAlert, Hammer, Box, Activity, Power } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { AlertTriangle, Zap, ShieldAlert, Hammer, Box, Activity, Power } from 'lucide-react';
 
 const NuclearPlantSim = () => {
   // Estado del Juego
@@ -12,15 +12,13 @@ const NuclearPlantSim = () => {
     { id: 2, active: true, health: 100 },
   ]);
   const [exploded, setExploded] = useState(false);
-  const [gameTime, setGameTime] = useState(0);
   const [logs, setLogs] = useState<string[]>(["Sistema iniciado. Esperando comandos..."]);
 
   // Constantes de equilibrio
-  const COOLANT_DRAIN_RATE = 0.8; // Cuánto gasta por tick si la válvula está abierta
-  const HEAT_GENERATION_BASE = 0.2;
-  const COOLING_POWER = 1.5; // Cuánto enfría el refrigerante
-  const REFILL_AMOUNT = 5; // La "Big Box"
-  
+  const COOLANT_DRAIN_RATE = 0.8;
+  const COOLING_POWER = 1.5;
+  const REFILL_AMOUNT = 5;
+
   // Función para añadir logs
   const addLog = (msg: string) => {
     setLogs(prev => [msg, ...prev].slice(0, 5));
@@ -31,39 +29,34 @@ const NuclearPlantSim = () => {
     if (exploded) return;
 
     const timer = setInterval(() => {
-      setGameTime(t => t + 1);
-
-      // 1. Verificar Electricidad (Transformadores)
+      // 1. Verificar Electricidad
       const activeTransformers = transformers.filter(t => t.active).length;
       const totalBlackout = activeTransformers === 0;
       
-      // 2. Lógica de Temperatura (1.2 Sistema de Temperatura)
+      // 2. Lógica de Temperatura
       setReactorTemp(prevTemp => {
         let change = 0;
 
-        // Generación de calor por potencia del núcleo (Increase/Decrease)
+        // Calor base por potencia
         change += (reactorPower / 10); 
 
-        // Penalización por fallos eléctricos severos (si no hay transformadores)
+        // Penalización por Blackout
         if (totalBlackout) {
-           change += 2.5; // Sube rápido sin electricidad
+           change += 2.5; 
         }
 
-        // Lógica de Enfriamiento (Coolant Rod)
+        // Enfriamiento
         if (valveOpen && coolantLevel > 0) {
           change -= COOLING_POWER;
-          // Consumir refrigerante
           setCoolantLevel(prev => Math.max(0, prev - COOLANT_DRAIN_RATE));
         } else {
-          // Si la válvula está cerrada o no hay coolant, calienta más rápido (acumulación)
-          change += 0.5;
+          change += 0.5; // Calentamiento pasivo si no hay flujo
         }
 
-        const newTemp = Math.max(20, Math.min(120, prevTemp + change)); // Min 20 grados ambiente
-        return newTemp;
+        return Math.max(20, Math.min(120, prevTemp + change));
       });
 
-      // 3. Chequear Explosión (1.3 Umbral Crítico)
+      // 3. Chequear Explosión
       setReactorTemp(currentTemp => {
         if (currentTemp >= 100 && !exploded) {
           setExploded(true);
@@ -78,10 +71,9 @@ const NuclearPlantSim = () => {
   }, [valveOpen, coolantLevel, reactorPower, transformers, exploded]);
 
   // Acciones del Usuario
-
   const toggleValve = () => {
-    if (isBlackout()) return; // Quizás los controles no funcionan sin luz? O asumimos manual.
-    // Asumiremos manual, pero visualmente difícil.
+    const isPowerOut = transformers.every(t => !t.active);
+    if (isPowerOut) return; 
     setValveOpen(!valveOpen);
     addLog(valveOpen ? "Válvula de refrigeración CERRADA." : "Válvula de refrigeración ABIERTA.");
   };
@@ -118,11 +110,14 @@ const NuclearPlantSim = () => {
 
   // Helpers visuales
   const isBlackout = () => transformers.every(t => !t.active);
+  
   const getTempColor = () => {
     if (reactorTemp < 50) return "text-green-500";
     if (reactorTemp < 80) return "text-yellow-500";
     return "text-red-600 animate-pulse";
   };
+
+  // --- RENDERIZADO ---
 
   // Pantalla de Game Over
   if (exploded) {
@@ -145,6 +140,7 @@ const NuclearPlantSim = () => {
     );
   }
 
+  // Pantalla Principal
   return (
     <div className={`min-h-screen font-mono transition-colors duration-1000 ${isBlackout() ? 'bg-black text-gray-600' : 'bg-slate-900 text-slate-100'}`}>
       
@@ -236,7 +232,7 @@ const NuclearPlantSim = () => {
             <p className="text-sm text-gray-400 mb-2">VÁLVULA DE FLUJO</p>
             <button
               onClick={toggleValve}
-              disabled={isBlackout()} // Opcional: bloquear si no hay luz
+              disabled={isBlackout()}
               className={`w-full p-4 rounded font-bold flex items-center justify-center gap-3 border-2 transition-all
                 ${valveOpen 
                   ? 'bg-green-900/30 border-green-500 text-green-400' 
