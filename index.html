@@ -1,420 +1,342 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revisión de Código Interactiva: Controlador de Zonas de Ambiente</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Calm Harmony -->
-    <!-- Application Structure Plan: The application uses a single-column, thematic layout. It begins with a header, followed by a section showcasing the script's strengths using visually distinct cards with icons for quick scanning. The main interactive component is a tabbed interface for the "Suggestions for Improvement." A new AI-powered section has been added to generate further refactoring suggestions using the Gemini API, enhancing the tool's analytical capabilities. -->
-    <!-- Visualization & Content Choices: Report Info: Strengths -> Goal: Inform -> Presentation: Grid of cards with icons (HTML/Tailwind) -> Interaction: Hover effect -> Justification: Improves scannability. Report Info: Improvement Suggestions -> Goal: Organize/Explain -> Presentation: Interactive tabs (HTML/JS) -> Interaction: Click to reveal content -> Justification: Breaks down complex info. Report Info: Code Snippets -> Goal: Illustrate -> Presentation: Styled code blocks -> Interaction: Copy-to-clipboard. Report Info: AI Analysis -> Goal: Extend/Analyze -> Presentation: Button-triggered content area -> Interaction: Click to call Gemini API and display results -> Justification: Provides dynamic, advanced feedback. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f7f4;
-            color: #333;
-        }
-        .active-tab {
-            background-color: #4a5568;
-            color: #ffffff;
-            border-color: #4a5568;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .code-block {
-            background-color: #2d3748;
-            color: #e2e8f0;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            position: relative;
-            font-family: 'Courier New', Courier, monospace;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        .copy-btn {
-            position: absolute;
-            top: 0.75rem;
-            right: 0.75rem;
-            background-color: #4a5568;
-            color: #e2e8f0;
-            border: none;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: background-color 0.2s;
-        }
-        .copy-btn:hover {
-            background-color: #718096;
-        }
-        .code-keyword { color: #90cdf4; }
-        .code-comment { color: #9ae6b4; }
-        .code-string { color: #faf089; }
-        .code-function { color: #f6ad55; }
-        .code-variable { color: #cbd5e0; }
-    </style>
-</head>
-<body class="antialiased">
+import React, { useState, useEffect, useRef } from 'react';
+import { AlertTriangle, Zap, Thermometer, Droplet, ShieldAlert, Hammer, Box, Activity, Power } from 'lucide-react';
 
-    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
+const NuclearPlantSim = () => {
+  // Estado del Juego
+  const [reactorTemp, setReactorTemp] = useState(30); // 0 a 100
+  const [reactorPower, setReactorPower] = useState(20); // 0 a 100
+  const [coolantLevel, setCoolantLevel] = useState(100); // 0 a 100
+  const [valveOpen, setValveOpen] = useState(false); // ON/OFF
+  const [transformers, setTransformers] = useState([
+    { id: 1, active: true, health: 100 },
+    { id: 2, active: true, health: 100 },
+  ]);
+  const [exploded, setExploded] = useState(false);
+  const [gameTime, setGameTime] = useState(0);
+  const [logs, setLogs] = useState<string[]>(["Sistema iniciado. Esperando comandos..."]);
 
-        <header class="text-center mb-10">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Controlador de Zonas de Ambiente</h1>
-            <p class="text-lg text-gray-600">Una Revisión de Código Interactiva</p>
-        </header>
+  // Constantes de equilibrio
+  const COOLANT_DRAIN_RATE = 0.8; // Cuánto gasta por tick si la válvula está abierta
+  const HEAT_GENERATION_BASE = 0.2;
+  const COOLING_POWER = 1.5; // Cuánto enfría el refrigerante
+  const REFILL_AMOUNT = 5; // La "Big Box"
+  
+  // Función para añadir logs
+  const addLog = (msg: string) => {
+    setLogs(prev => [msg, ...prev].slice(0, 5));
+  };
 
-        <main>
-            <section id="strengths" class="mb-12">
-                <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">Puntos Fuertes Clave</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                        <div class="flex items-center mb-3">
-                            <span class="text-2xl mr-4">✅</span>
-                            <h3 class="font-semibold text-gray-800">Gestión Eficiente de Sonido</h3>
-                        </div>
-                        <p class="text-gray-600 text-sm">Usa un único objeto de sonido maestro, lo cual es muy eficiente en comparación con crear y destruir instancias.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                        <div class="flex items-center mb-3">
-                            <span class="text-2xl mr-4">✨</span>
-                            <h3 class="font-semibold text-gray-800">Transiciones Suaves</h3>
-                        </div>
-                        <p class="text-gray-600 text-sm">Emplea TweenService para el fundido de volumen y FOV, creando una experiencia de usuario pulida y profesional.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                        <div class="flex items-center mb-3">
-                            <span class="text-2xl mr-4">🎧</span>
-                            <h3 class="font-semibold text-gray-800">Audio sin Interrupciones</h3>
-                        </div>
-                        <p class="text-gray-600 text-sm">Guarda y reanuda inteligentemente la posición de reproducción del sonido al reingresar a las zonas.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                        <div class="flex items-center mb-3">
-                            <span class="text-2xl mr-4">🧠</span>
-                            <h3 class="font-semibold text-gray-800">Manejo Inteligente de Zonas</h3>
-                        </div>
-                        <p class="text-gray-600 text-sm">Maneja correctamente el movimiento entre zonas que comparten el mismo sonido, evitando reinicios innecesarios.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                        <div class="flex items-center mb-3">
-                            <span class="text-2xl mr-4">💪</span>
-                            <h3 class="font-semibold text-gray-800">Robustez</h3>
-                        </div>
-                        <p class="text-gray-600 text-sm">Resistente a los respawns del jugador al revalidar las partes del personaje en cada fotograma.</p>
-                    </div>
+  // Bucle principal del juego (1 tick cada 500ms)
+  useEffect(() => {
+    if (exploded) return;
+
+    const timer = setInterval(() => {
+      setGameTime(t => t + 1);
+
+      // 1. Verificar Electricidad (Transformadores)
+      const activeTransformers = transformers.filter(t => t.active).length;
+      const totalBlackout = activeTransformers === 0;
+      
+      // 2. Lógica de Temperatura (1.2 Sistema de Temperatura)
+      setReactorTemp(prevTemp => {
+        let change = 0;
+
+        // Generación de calor por potencia del núcleo (Increase/Decrease)
+        change += (reactorPower / 10); 
+
+        // Penalización por fallos eléctricos severos (si no hay transformadores)
+        if (totalBlackout) {
+           change += 2.5; // Sube rápido sin electricidad
+        }
+
+        // Lógica de Enfriamiento (Coolant Rod)
+        if (valveOpen && coolantLevel > 0) {
+          change -= COOLING_POWER;
+          // Consumir refrigerante
+          setCoolantLevel(prev => Math.max(0, prev - COOLANT_DRAIN_RATE));
+        } else {
+          // Si la válvula está cerrada o no hay coolant, calienta más rápido (acumulación)
+          change += 0.5;
+        }
+
+        const newTemp = Math.max(20, Math.min(120, prevTemp + change)); // Min 20 grados ambiente
+        return newTemp;
+      });
+
+      // 3. Chequear Explosión (1.3 Umbral Crítico)
+      setReactorTemp(currentTemp => {
+        if (currentTemp >= 100 && !exploded) {
+          setExploded(true);
+          addLog("¡CRÍTICO! MELTDOWN INMINENTE. EL NÚCLEO HA EXPLOTADO.");
+        }
+        return currentTemp;
+      });
+
+    }, 500);
+
+    return () => clearInterval(timer);
+  }, [valveOpen, coolantLevel, reactorPower, transformers, exploded]);
+
+  // Acciones del Usuario
+
+  const toggleValve = () => {
+    if (isBlackout()) return; // Quizás los controles no funcionan sin luz? O asumimos manual.
+    // Asumiremos manual, pero visualmente difícil.
+    setValveOpen(!valveOpen);
+    addLog(valveOpen ? "Válvula de refrigeración CERRADA." : "Válvula de refrigeración ABIERTA.");
+  };
+
+  const adjustPower = (amount: number) => {
+    setReactorPower(prev => {
+      const newVal = Math.max(0, Math.min(100, prev + amount));
+      addLog(`Potencia del núcleo ajustada a ${newVal}%`);
+      return newVal;
+    });
+  };
+
+  const refillCoolant = () => {
+    setCoolantLevel(prev => {
+      const newVal = Math.min(100, prev + REFILL_AMOUNT);
+      addLog("Caja de refrigerante añadida (+5%)");
+      return newVal;
+    });
+  };
+
+  const sabotageTransformer = (id: number) => {
+    setTransformers(prev => prev.map(t => 
+      t.id === id ? { ...t, active: false, health: 0 } : t
+    ));
+    addLog(`¡ALERTA! Transformador ${id} destruido por C4.`);
+  };
+
+  const repairTransformer = (id: number) => {
+    setTransformers(prev => prev.map(t => 
+      t.id === id ? { ...t, active: true, health: 100 } : t
+    ));
+    addLog(`Transformador ${id} reparado y operativo.`);
+  };
+
+  // Helpers visuales
+  const isBlackout = () => transformers.every(t => !t.active);
+  const getTempColor = () => {
+    if (reactorTemp < 50) return "text-green-500";
+    if (reactorTemp < 80) return "text-yellow-500";
+    return "text-red-600 animate-pulse";
+  };
+
+  // Pantalla de Game Over
+  if (exploded) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen w-full bg-black text-red-600 p-8 font-mono border-8 border-red-600">
+        <ShieldAlert size={120} className="mb-6 animate-bounce" />
+        <h1 className="text-6xl font-bold text-center mb-4">MELTDOWN TOTAL</h1>
+        <p className="text-2xl text-center mb-8">El núcleo alcanzó el 100% de temperatura.</p>
+        <div className="bg-red-900/20 p-6 rounded border border-red-600 text-center">
+          <p className="text-xl mb-2">Radio de destrucción: TOTAL</p>
+          <p className="text-xl">Personal perdido: TODOS</p>
+        </div>
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-12 px-8 py-4 bg-red-600 text-black font-bold text-xl hover:bg-red-500 rounded"
+        >
+          REINICIAR SIMULACIÓN
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`min-h-screen font-mono transition-colors duration-1000 ${isBlackout() ? 'bg-black text-gray-600' : 'bg-slate-900 text-slate-100'}`}>
+      
+      {/* Header Status */}
+      <header className={`p-4 border-b-4 flex justify-between items-center ${isBlackout() ? 'border-gray-800' : 'border-blue-500 bg-slate-800'}`}>
+        <div className="flex items-center gap-3">
+          <Activity className={isBlackout() ? 'text-gray-600' : 'text-blue-400'} />
+          <h1 className="text-xl font-bold tracking-widest">SISTEMA DE CONTROL NUCLEAR v1.2</h1>
+        </div>
+        <div className={`px-4 py-1 rounded font-bold ${reactorTemp > 80 ? 'bg-red-600 text-white animate-pulse' : 'bg-green-600 text-white'}`}>
+          ESTADO: {reactorTemp > 80 ? 'CRÍTICO' : reactorTemp > 50 ? 'INESTABLE' : 'ESTABLE'}
+        </div>
+      </header>
+
+      {/* Main Grid */}
+      <main className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
+
+        {/* 1. REACTOR CORE */}
+        <div className={`border-2 rounded-lg p-4 relative overflow-hidden ${isBlackout() ? 'border-gray-800 bg-gray-900' : 'border-slate-600 bg-slate-800/50'}`}>
+          <div className="absolute top-2 right-2 opacity-20">
+            <Activity size={100} />
+          </div>
+          <h2 className="text-2xl font-bold mb-6 border-b border-gray-600 pb-2 flex items-center gap-2">
+            <span className="text-red-500">01.</span> NÚCLEO (CORE)
+          </h2>
+
+          {/* Temperature Gauge */}
+          <div className="mb-8 text-center">
+            <p className="text-sm text-gray-400 mb-2">TEMPERATURA ACTUAL</p>
+            <div className={`text-6xl font-bold transition-all ${getTempColor()}`}>
+              {reactorTemp.toFixed(1)}°C
+            </div>
+            <div className="w-full bg-gray-700 h-4 mt-4 rounded-full overflow-hidden border border-gray-500">
+              <div 
+                className={`h-full transition-all duration-300 ${reactorTemp > 80 ? 'bg-red-600' : 'bg-green-500'}`}
+                style={{ width: `${Math.min(100, reactorTemp)}%` }}
+              ></div>
+            </div>
+            <p className="text-xs text-red-500 mt-1 text-right">Peligro a los 100°C</p>
+          </div>
+
+          {/* Power Controls */}
+          <div className="space-y-4">
+            <p className="text-sm text-gray-400">POTENCIA DE SALIDA: {reactorPower}%</p>
+            <div className="flex gap-2">
+              <button 
+                onClick={() => adjustPower(-10)}
+                className={`flex-1 p-4 rounded border-2 font-bold transition-all ${isBlackout() ? 'border-gray-700 text-gray-700' : 'border-yellow-600 text-yellow-500 hover:bg-yellow-600/20'}`}
+              >
+                DISMINUIR (-)
+              </button>
+              <button 
+                onClick={() => adjustPower(10)}
+                className={`flex-1 p-4 rounded border-2 font-bold transition-all ${isBlackout() ? 'border-gray-700 text-gray-700' : 'border-red-600 text-red-500 hover:bg-red-600/20'}`}
+              >
+                AUMENTAR (+)
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              * Aumentar potencia sube temperatura.
+              <br/>* Disminuir ayuda a estabilizar.
+            </p>
+          </div>
+        </div>
+
+        {/* 2. COOLANT SYSTEM */}
+        <div className={`border-2 rounded-lg p-4 relative ${isBlackout() ? 'border-gray-800 bg-gray-900' : 'border-blue-900 bg-slate-800/50'}`}>
+          <h2 className="text-2xl font-bold mb-6 border-b border-gray-600 pb-2 flex items-center gap-2">
+            <span className="text-blue-500">02.</span> REFRIGERACIÓN
+          </h2>
+
+          {/* Tank Visual */}
+          <div className="flex justify-center mb-6">
+            <div className="relative w-24 h-48 border-4 border-blue-500/50 rounded-lg bg-gray-900 overflow-hidden">
+              <div 
+                className="absolute bottom-0 w-full bg-blue-500 transition-all duration-500 opacity-80"
+                style={{ height: `${coolantLevel}%` }}
+              >
+                <div className="w-full h-2 bg-blue-300 opacity-50 animate-pulse"></div>
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center font-bold text-white drop-shadow-md z-10">
+                {Math.round(coolantLevel)}%
+              </div>
+            </div>
+          </div>
+
+          {/* Valve Control */}
+          <div className="mb-6">
+            <p className="text-sm text-gray-400 mb-2">VÁLVULA DE FLUJO</p>
+            <button
+              onClick={toggleValve}
+              disabled={isBlackout()} // Opcional: bloquear si no hay luz
+              className={`w-full p-4 rounded font-bold flex items-center justify-center gap-3 border-2 transition-all
+                ${valveOpen 
+                  ? 'bg-green-900/30 border-green-500 text-green-400' 
+                  : 'bg-red-900/30 border-red-500 text-red-400'}
+                ${isBlackout() ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02]'}
+              `}
+            >
+              <Power size={20} />
+              {valveOpen ? "ESTADO: ABIERTA (ON)" : "ESTADO: CERRADA (OFF)"}
+            </button>
+            {valveOpen && coolantLevel > 0 && (
+              <p className="text-xs text-blue-400 mt-1 text-center animate-pulse">Fluyendo coolant...</p>
+            )}
+          </div>
+
+          {/* Refill Action */}
+          <button 
+            onClick={refillCoolant}
+            className={`w-full py-3 px-4 rounded border border-dashed border-gray-500 flex items-center justify-center gap-2 
+              ${isBlackout() ? 'text-gray-600 hover:bg-gray-800' : 'text-gray-300 hover:bg-slate-700 hover:border-white'}
+            `}
+          >
+            <Box size={18} />
+            Traer Caja (+5% Coolant)
+          </button>
+        </div>
+
+        {/* 3. ELECTRICAL GRID */}
+        <div className={`border-2 rounded-lg p-4 ${isBlackout() ? 'border-gray-800 bg-gray-900' : 'border-yellow-900 bg-slate-800/50'}`}>
+          <h2 className="text-2xl font-bold mb-6 border-b border-gray-600 pb-2 flex items-center gap-2">
+            <span className="text-yellow-500">03.</span> ELÉCTRICO
+          </h2>
+
+          {isBlackout() && (
+            <div className="bg-red-900/50 border border-red-500 p-3 mb-4 rounded text-center animate-pulse text-red-200 font-bold">
+              ¡APAGÓN TOTAL DETECTADO!
+              <p className="text-xs font-normal mt-1">Temp. subiendo rápidamente. Controles comprometidos.</p>
+            </div>
+          )}
+
+          <div className="space-y-4">
+            {transformers.map((t) => (
+              <div key={t.id} className={`p-4 rounded border flex justify-between items-center ${t.active ? 'bg-slate-700 border-green-500' : 'bg-black border-red-600'}`}>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Zap size={18} className={t.active ? "text-yellow-400" : "text-gray-600"} />
+                    <span className={`font-bold ${t.active ? 'text-white' : 'text-red-500'}`}>
+                      T-{t.id}
+                    </span>
+                  </div>
+                  <span className="text-xs text-gray-400">{t.active ? "OPERATIVO" : "DESTRUIDO"}</span>
                 </div>
-            </section>
-            
-            <section id="ai-analysis" class="mb-12">
-                <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">Análisis con IA ✨</h2>
-                <div class="bg-white rounded-lg shadow-md p-4 sm:p-6 text-center">
-                    <p class="text-gray-700 mb-4">Usa la IA de Gemini para obtener sugerencias adicionales sobre cómo refactorizar y mejorar el script original.</p>
-                    <button id="generate-btn" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors duration-300">
-                        Generar Sugerencias de Refactorización
-                    </button>
-                    <div id="loader" class="mt-4" style="display: none;">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                        <p class="text-gray-600 mt-2">Analizando el código...</p>
-                    </div>
-                    <div id="ai-response" class="mt-6 text-left p-4 bg-gray-50 rounded-lg border border-gray-200" style="display: none; white-space: pre-wrap;">
-                    </div>
-                </div>
-            </section>
-
-            <section id="suggestions">
-                <h2 class="text-2xl font-semibold text-gray-700 mb-2 text-center">Sugerencias de Mejora</h2>
-                <p class="text-center text-gray-600 mb-6">Aunque el script es sólido, la revisión ofreció sugerencias clave para mejorar su flexibilidad y mantenibilidad. Haz clic en cada sugerencia para saber más.</p>
                 
-                <div id="tabs-container" class="bg-white rounded-lg shadow-md p-4 sm:p-6">
-                    <div class="flex flex-wrap justify-center border-b border-gray-200 mb-4">
-                        <button data-tab="tab1" class="tab-btn py-2 px-4 font-medium text-gray-600 border-b-2 border-transparent hover:border-gray-400 hover:text-gray-800 transition-colors duration-200 active-tab">Usar Atributos</button>
-                        <button data-tab="tab2" class="tab-btn py-2 px-4 font-medium text-gray-600 border-b-2 border-transparent hover:border-gray-400 hover:text-gray-800 transition-colors duration-200">Desacoplar Sistemas</button>
-                        <button data-tab="tab3" class="tab-btn py-2 px-4 font-medium text-gray-600 border-b-2 border-transparent hover:border-gray-400 hover:text-gray-800 transition-colors duration-200">Refinamientos de Código</button>
-                    </div>
-
-                    <div id="tab1" class="tab-content active">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-3">1. Usar Atributos para Configuraciones de Zona</h3>
-                        <p class="text-gray-700 mb-4">En lugar de valores fijos como `ZONE_FOV`, usa Atributos en las partes de la zona. Esto permite la configuración directa en el editor sin modificar el script, haciendo el sistema mucho más flexible. Podrías establecer un atributo `CameraFOV` o `TargetVolume` en cada parte.</p>
-                        <div class="code-block">
-                            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                            <code><span class="code-comment">-- Dentro de la función handleFOV o al detectar una nueva zona</span>
-<span class="code-keyword">local</span> <span class="code-variable">newFov</span> = <span class="code-variable">newZone</span> <span class="code-keyword">and</span> <span class="code-variable">newZone</span>:<span class="code-function">GetAttribute</span>(<span class="code-string">"CameraFOV"</span>)
-
-<span class="code-keyword">if</span> <span class="code-variable">newFov</span> <span class="code-keyword">then</span>
-    <span class="code-comment">-- Usar el valor FOV del atributo de la parte</span>
-    <span class="code-variable">CameraEffects</span>.<span class="code-function">setFOV</span>(<span class="code-variable">newFov</span>, <span class="code-variable">FOV_FADE_DURATION</span>) 
-<span class="code-keyword">else</span>
-    <span class="code-comment">-- Volver al valor por defecto si no se encuentra el atributo</span>
-    <span class="code-variable">CameraEffects</span>.<span class="code-function">resetFOV</span>(<span class="code-variable">FOV_FADE_DURATION</span>) 
-<span class="code-keyword">end</span></code>
-                        </div>
-                    </div>
-                    <div id="tab2" class="tab-content">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-3">2. Desacoplar los Sistemas de Cámara y Sonido</h3>
-                        <p class="text-gray-700 mb-4">Para una mejor organización y mantenibilidad, separa la lógica de sonido y cámara en scripts independientes. Un script central "ZoneService" podría detectar la zona actual del jugador y disparar un `BindableEvent`. Otros scripts controladores (para sonido, cámara, iluminación, etc.) pueden escuchar este evento y reaccionar en consecuencia. Esta "separación de responsabilidades" facilita la depuración y extensión del código.</p>
-                    </div>
-                    <div id="tab3" class="tab-content">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-3">3. Refinamientos Menores de Código</h3>
-                        <p class="text-gray-700 mb-4">Dos pequeños refinamientos pueden mejorar la claridad. Primero, renombra variables como `touchingZones` a `overlappingZones` para reflejar con mayor precisión que solo estás usando el primer elemento. Segundo, es una buena práctica almacenar la conexión de `RunService.Heartbeat` en una variable para que pueda ser desconectada si el script se destruye, previniendo posibles fugas de memoria.</p>
-                         <div class="code-block">
-                            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
-                            <code><span class="code-keyword">local</span> <span class="code-variable">overlappingZones</span> = <span class="code-variable">Workspace</span>:<span class="code-function">GetPartsInPart</span>(<span class="code-variable">humanoidRootPart</span>, <span class="code-variable">overlapParams</span>)
-<span class="code-keyword">local</span> <span class="code-variable">newActiveZone</span> = <span class="code-variable">overlappingZones</span>[<span class="code-number">1</span>] <span class="code-comment">-- La primera parte encontrada es la de mayor prioridad</span></code>
-                        </div>
-                    </div>
+                <div>
+                  {t.active ? (
+                    <button 
+                      onClick={() => sabotageTransformer(t.id)}
+                      className="bg-red-900/20 hover:bg-red-900/50 text-red-500 border border-red-900 px-3 py-1 rounded text-xs flex items-center gap-1"
+                      title="Colocar C4"
+                    >
+                      <AlertTriangle size={12} /> SABOTEAR
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => repairTransformer(t.id)}
+                      className="bg-blue-900/20 hover:bg-blue-900/50 text-blue-400 border border-blue-900 px-3 py-1 rounded text-xs flex items-center gap-1"
+                      title="Reparar"
+                    >
+                      <Hammer size={12} /> REPARAR
+                    </button>
+                  )}
                 </div>
-            </section>
-        </main>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-6 p-3 bg-black/30 rounded text-xs text-gray-400">
+            <p>ADVERTENCIA:</p>
+            <p>- La pérdida de ambos transformadores causa fallo en sistemas de enfriamiento.</p>
+            <p>- Blackout aumenta la generación de calor crítico.</p>
+          </div>
+        </div>
 
-        <footer class="text-center mt-12 pt-6 border-t border-gray-200">
-            <p class="text-sm text-gray-500">Este informe interactivo fue generado para proporcionar una visión dinámica del análisis del script.</p>
-        </footer>
+      </main>
+
+      {/* Logs Footer */}
+      <footer className="max-w-7xl mx-auto px-6 pb-6">
+        <div className="bg-black border border-gray-700 p-3 rounded font-mono text-sm h-32 overflow-y-auto shadow-inner">
+          <p className="text-gray-500 border-b border-gray-800 mb-2 pb-1">REGISTRO DEL SISTEMA:</p>
+          {logs.map((log, i) => (
+            <div key={i} className="mb-1">
+              <span className="text-blue-500 mr-2">[{new Date().toLocaleTimeString()}]</span>
+              <span className="text-green-400">{log}</span>
+            </div>
+          ))}
+        </div>
+      </footer>
+
     </div>
+  );
+};
 
-    <script>
-        const tabsContainer = document.getElementById('tabs-container');
-        const tabButtons = tabsContainer.querySelectorAll('.tab-btn');
-        const tabContents = tabsContainer.querySelectorAll('.tab-content');
-
-        tabsContainer.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('tab-btn')) return;
-
-            const tabId = e.target.getAttribute('data-tab');
-            
-            tabButtons.forEach(btn => {
-                btn.classList.remove('active-tab');
-                if (btn.getAttribute('data-tab') === tabId) {
-                    btn.classList.add('active-tab');
-                }
-            });
-
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-                if (content.id === tabId) {
-                    content.classList.add('active');
-                }
-            });
-        });
-        
-        function copyCode(button) {
-            const codeBlock = button.nextElementSibling;
-            const text = codeBlock.innerText;
-
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                button.innerText = 'Copiado!';
-                setTimeout(() => {
-                    button.innerText = 'Copiar';
-                }, 2000);
-            } catch (err) {
-                console.error('Failed to copy text: ', err);
-            }
-            document.body.removeChild(textArea);
-        }
-
-        const generateBtn = document.getElementById('generate-btn');
-        const loader = document.getElementById('loader');
-        const aiResponseContainer = document.getElementById('ai-response');
-
-        const originalLuaScript = `
--- ================== CONFIGURACIÓN ==================
--- Configuración de Sonido
-local FADE_DURATION = 1.0  -- Duración del fundido de sonido
-local TARGET_VOLUME = 0.6  -- Volumen máximo del sonido
-
--- Configuración de Cámara
-local USE_FOV_EFFECT = true
-local ZONE_FOV = 86
-local FOV_FADE_DURATION = 1.75
--- =================================================
-
--- Servicios
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
-local CollectionService = game:GetService("CollectionService")
-
-local CameraEffects = require(script.CameraEffects)
-
-local localPlayer = Players.LocalPlayer
-local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
-local soundPartsFolder = Workspace:WaitForChild("soundParts")
-
-local masterSound = Instance.new("Sound")
-masterSound.Name = "MasterAmbientSound"
-masterSound.Looped = true
-masterSound.Volume = 0
-masterSound.Parent = script
-
-local currentActiveZone, activeTween = nil, nil
-local isTransitioning = false
-local soundPlaybackPositions = {}
-
-local overlapParams = OverlapParams.new()
-overlapParams.FilterType = Enum.RaycastFilterType.Include
-overlapParams.FilterDescendantsInstances = {soundPartsFolder}
-
-local function onTweenCompleted()
-	isTransitioning = false
-	activeTween = nil
-end
-
-local function fadeIn()
-	if activeTween then activeTween:Cancel() end
-	masterSound:Play()
-	activeTween = TweenService:Create(masterSound, TweenInfo.new(FADE_DURATION, Enum.EasingStyle.Linear), {Volume = TARGET_VOLUME})
-	activeTween.Completed:Once(onTweenCompleted)
-	activeTween:Play()
-end
-
-local function fadeOut(onCompleteCallback)
-	if activeTween then activeTween:Cancel() end
-	activeTween = TweenService:Create(masterSound, TweenInfo.new(FADE_DURATION, Enum.EasingStyle.Linear), {Volume = 0})
-	activeTween.Completed:Once(function()
-		if masterSound.Volume == 0 then masterSound:Pause() end
-		activeTween = nil
-		if onCompleteCallback then onCompleteCallback() else isTransitioning = false end
-	end)
-	activeTween:Play()
-end
-
-local function handleFOV(oldZone, newZone)
-	if not USE_FOV_EFFECT then return end
-	local oldTag = oldZone and CollectionService:HasTag(oldZone, "camera")
-	local newTag = newZone and CollectionService:HasTag(newZone, "camera")
-	if newTag and not oldTag then
-		CameraEffects.setFOV(ZONE_FOV, FOV_FADE_DURATION)
-	elseif not newTag and oldTag then
-		CameraEffects.resetFOV(FOV_FADE_DURATION)
-	end
-end
-
-local function onHeartbeat()
-	if not humanoidRootPart or not humanoidRootPart.Parent then
-		character = localPlayer.Character
-		if not character then return end
-		humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-		return
-	end
-	if isTransitioning then return end
-
-	local touchingZones = Workspace:GetPartsInPart(humanoidRootPart, overlapParams)
-	local newActiveZone = touchingZones[1]
-	if newActiveZone == currentActiveZone then return end
-
-	local oldSourceSound = currentActiveZone and currentActiveZone:FindFirstChildOfClass("Sound")
-	local newSourceSound = newActiveZone and newActiveZone:FindFirstChildOfClass("Sound")
-	local oldSoundId = oldSourceSound and oldSourceSound.SoundId or ""
-	local newSoundId = newSourceSound and newSourceSound.SoundId or ""
-
-	if newSoundId ~= "" and newSoundId == oldSoundId then
-		handleFOV(currentActiveZone, newActiveZone)
-		currentActiveZone = newActiveZone
-		return
-	end
-
-	if currentActiveZone and masterSound.IsPlaying and oldSoundId ~= "" then
-		soundPlaybackPositions[oldSoundId] = masterSound.TimePosition
-	end
-
-	handleFOV(currentActiveZone, newActiveZone)
-	isTransitioning = true
-	currentActiveZone = newActiveZone
-
-	local function playNewSound()
-		if newSoundId ~= "" then
-			masterSound.SoundId = newSoundId
-			masterSound.TimePosition = soundPlaybackPositions[newSoundId] or 0
-			fadeIn()
-		else
-			masterSound.SoundId = ""
-			isTransitioning = false
-		end
-	end
-
-	if masterSound.IsPlaying then fadeOut(playNewSound) else playNewSound() end
-end
-
-RunService.Heartbeat:Connect(onHeartbeat)
-        `;
-
-        const prompt = "Act as an expert Roblox scripter. Analyze the following Lua script for an ambient zone controller. Provide 3 concrete refactoring suggestions that would improve its structure, maintainability, or performance. For each suggestion, provide a brief 'before' and 'after' code snippet and explain the benefits of the change."
-            + "\n\nThe script is:\n"
-            + "```lua\n"
-            + originalLuaScript
-            + "\n```";
-
-        async function callGeminiApi() {
-            loader.style.display = 'block';
-            aiResponseContainer.style.display = 'none';
-            aiResponseContainer.textContent = '';
-            generateBtn.disabled = true;
-
-            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-            const payload = { contents: chatHistory };
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            
-            let attempts = 0;
-            const maxAttempts = 5;
-            let delay = 1000;
-
-            while (attempts < maxAttempts) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        aiResponseContainer.textContent = text;
-                        aiResponseContainer.style.display = 'block';
-                    } else {
-                         aiResponseContainer.textContent = 'No se pudo obtener una respuesta válida de la IA. La respuesta podría estar vacía o tener un formato inesperado.';
-                         aiResponseContainer.style.display = 'block';
-                    }
-                    break; 
-                } catch (error) {
-                    attempts++;
-                    if (attempts >= maxAttempts) {
-                        aiResponseContainer.textContent = 'Error al contactar la API de IA después de varios intentos. Por favor, inténtalo de nuevo más tarde.';
-                        aiResponseContainer.style.display = 'block';
-                    } else {
-                        await new Promise(res => setTimeout(res, delay));
-                        delay *= 2;
-                    }
-                } finally {
-                    loader.style.display = 'none';
-                    generateBtn.disabled = false;
-                }
-            }
-        }
-
-        generateBtn.addEventListener('click', callGeminiApi);
-
-    </script>
-</body>
-</html>
+export default NuclearPlantSim;
