@@ -1,435 +1,794 @@
 <!DOCTYPE html>
+
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechShop - Pago con PayPal</title>
+
+    <title>Panel de Control Nuclear</title>
+
     
+
     <!-- Tailwind CSS -->
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     
-    <!-- Font Awesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- React & ReactDOM -->
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    
+
+    <!-- Babel para JSX -->
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+
 
     <style>
-        /* Animaciones suaves para el carrito */
-        .cart-overlay {
-            background-color: rgba(0, 0, 0, 0.5);
-            transition: opacity 0.3s ease;
+
+        body {
+
+            background-color: #0f172a; /* Slate 900 */
+
+            color: #f1f5f9; /* Slate 100 */
+
         }
-        .cart-sidebar {
-            transition: transform 0.3s ease-in-out;
-        }
-        /* Ocultar scrollbar en el carrito pero mantener funcionalidad */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        /* Loader simple */
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3b82f6;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+
     </style>
+
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
 
-    <!-- Navegación -->
-    <nav class="bg-white shadow-md sticky top-0 z-40">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-microchip text-blue-600 text-2xl"></i>
-                <span class="text-xl font-bold tracking-tight">TechShop</span>
-            </div>
-            <button onclick="toggleCart()" class="relative p-2 hover:bg-gray-100 rounded-full transition">
-                <i class="fa-solid fa-cart-shopping text-xl text-gray-700"></i>
-                <span id="cart-count" class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center transform scale-0 transition-transform duration-200">0</span>
-            </button>
-        </div>
-    </nav>
+<body>
 
-    <!-- Hero Section -->
-    <header class="bg-blue-600 text-white py-12 mb-8">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl font-bold mb-2">Lo último en tecnología</h1>
-            <p class="text-blue-100">Envío gratis en compras mayores a $100</p>
-        </div>
-    </header>
+    <div id="root"></div>
 
-    <!-- Lista de Productos -->
-    <main class="container mx-auto px-4 mb-20">
-        <h2 class="text-2xl font-bold mb-6 border-l-4 border-blue-600 pl-3">Nuestros Productos</h2>
-        
-        <!-- Grid de productos -->
-        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Los productos se renderizan aquí vía JS -->
-        </div>
-    </main>
 
-    <!-- Modal del Carrito -->
-    <div id="cart-modal" class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300">
-        <!-- Overlay oscuro -->
-        <div onclick="toggleCart()" class="cart-overlay absolute inset-0 bg-black bg-opacity-50"></div>
-        
-        <!-- Sidebar del carrito -->
-        <div id="cart-sidebar" class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl transform translate-x-full transition-transform duration-300 pointer-events-auto flex flex-col">
+
+    <script type="text/babel">
+
+        const { useState, useEffect, useRef } = React;
+
+
+
+        // --- ICONOS SVG (Inline para evitar dependencias externas) ---
+
+        const IconAlertTriangle = ({ size = 24, className = "" }) => (
+
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
+
+        );
+
+        const IconZap = ({ size = 24, className = "" }) => (
+
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+
+        );
+
+        const IconDroplet = ({ size = 24, className = "" }) => (
+
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22a7 7 0 0 0 7-7c0-2-6-9-7-9S5 8 5 15a7 7 0 0 0 7 7z"/></svg>
+
+        );
+
+        const IconActivity = ({ size = 24, className = "" }) => (
+
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+
+        );
+
+        const IconBox = ({ size = 24, className = "" }) => (
+
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+
+        );
+
+        const IconRotateCcw = ({ size = 24, className = "" }) => (
+
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+
+        );
+
+        const IconLock = ({ size = 24, className = "" }) => (
+
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+
+        );
+
+
+
+        const NuclearControlPanel = () => {
+
+            // --- ESTADOS DEL SISTEMA ---
+
             
-            <!-- Cabecera del carrito -->
-            <div class="p-5 border-b flex justify-between items-center bg-gray-50">
-                <h2 class="text-xl font-bold"><i class="fa-solid fa-bag-shopping mr-2"></i> Tu Carrito</h2>
-                <button onclick="toggleCart()" class="text-gray-500 hover:text-red-500 transition">
-                    <i class="fa-solid fa-xmark text-2xl"></i>
-                </button>
-            </div>
 
-            <!-- Items del carrito -->
-            <div id="cart-items" class="flex-1 overflow-y-auto p-5 space-y-4 no-scrollbar">
-                <!-- Items inyectados vía JS -->
-                <div class="text-center text-gray-400 mt-10">
-                    <i class="fa-solid fa-cart-arrow-down text-4xl mb-2"></i>
-                    <p>Tu carrito está vacío</p>
-                </div>
-            </div>
+            // 1. Reactor Nuclear & Core
 
-            <!-- Footer del carrito (Total + PayPal) -->
-            <div class="border-t p-6 bg-gray-50">
-                <div class="flex justify-between items-center mb-4 text-lg font-bold">
-                    <span>Total:</span>
-                    <span id="cart-total" class="text-blue-600">$0.00</span>
-                </div>
+            const [heat, setHeat] = useState(20); // 0 a 100
 
-                <!-- Contenedor del botón de PayPal -->
-                <div id="paypal-button-container" class="w-full min-h-[150px]">
-                    <!-- Aquí se inyecta el botón o el fallback -->
-                </div>
-            </div>
-        </div>
-    </div>
+            const [power, setPower] = useState(30); // 0 a 100
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-gray-300 py-8 text-center mt-auto">
-        <p>&copy; 2023 TechShop. Ejemplo de integración PayPal.</p>
-    </footer>
+            const [meltdown, setMeltdown] = useState(false);
 
-    <!-- Lógica de la Aplicación -->
-    <script>
-        // --- CONFIGURACIÓN ---
-        const PAYPAL_CLIENT_ID = "BAAbxWELSelhsN-zCv0wLVYY_A-_4O0ocsPTG8XbnZ0HVnBZPMkudlSDa9ClU03AB2pId-gWM3o2GS4kcc";
-        
-        // --- Interceptor de Errores Globales (FIX CRÍTICO) ---
-        // Esto captura los errores del SDK cuando el iframe bloquea el acceso a window.top
-        window.addEventListener('error', function(event) {
-            const errorMsg = (event.message || "").toLowerCase();
-            // Detectar errores específicos de PayPal o restricciones de iframe
-            if (errorMsg.includes('paypal') || errorMsg.includes('window host') || errorMsg.includes('postmessage')) {
-                // Si ya estamos usando fallback, ignorar
-                if (window.useFallback) return;
 
-                console.warn("⚠️ Detectado entorno restringido o error de PayPal. Activando modo simulación seguro.");
-                renderFallbackButton();
-            }
-        }, true); // Use capture phase
 
-        // --- 1. Datos de Productos ---
-        const products = [
-            {
-                id: 1,
-                name: "Auriculares Noise Cancelling",
-                price: 59.99,
-                description: "Sonido de alta fidelidad con cancelación de ruido.",
-                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=60"
-            },
-            {
-                id: 2,
-                name: "Smartwatch Deportivo",
-                price: 129.50,
-                description: "Monitoreo de salud y notificaciones en tu muñeca.",
-                image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60"
-            },
-            {
-                id: 3,
-                name: "Cámara Instantánea",
-                price: 89.00,
-                description: "Captura momentos y obtén la foto al instante.",
-                image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&auto=format&fit=crop&q=60"
-            },
-            {
-                id: 4,
-                name: "Gafas de Sol Polarizadas",
-                price: 45.00,
-                description: "Estilo clásico con protección UV total.",
-                image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&auto=format&fit=crop&q=60"
-            },
-            {
-                id: 5,
-                name: "Teclado Mecánico RGB",
-                price: 75.99,
-                description: "Switches azules para la mejor experiencia de tipeo.",
-                image: "https://images.unsplash.com/photo-1587829741301-dc798b91a603?w=500&auto=format&fit=crop&q=60"
-            },
-            {
-                id: 6,
-                name: "Mochila Tech Impermeable",
-                price: 34.99,
-                description: "Protege tu laptop y gadgets de la lluvia.",
-                image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&auto=format&fit=crop&q=60"
-            }
-        ];
+            // 2. Sistema de Coolant
 
-        // --- 2. Estado del Carrito ---
-        let cart = [];
-        let isCartOpen = false;
-        let isPayPalReady = false;
-        window.useFallback = false; // Hacer global para el listener
+            const [coolantLevel, setCoolantLevel] = useState(100); // 0 a 100
 
-        // --- 3. Renderizado de Productos ---
-        const productsGrid = document.getElementById('products-grid');
+            const [valveOpen, setValveOpen] = useState(true); // ON/OFF
 
-        function renderProducts() {
-            productsGrid.innerHTML = products.map(product => `
-                <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden border border-gray-100 flex flex-col h-full">
-                    <div class="h-48 overflow-hidden relative group">
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col">
-                        <h3 class="font-bold text-lg mb-1">${product.name}</h3>
-                        <p class="text-sm text-gray-500 mb-4 flex-1">${product.description}</p>
-                        <div class="flex justify-between items-center mt-auto">
-                            <span class="text-xl font-bold text-gray-900">$${product.price.toFixed(2)}</span>
-                            <button onclick="addToCart(${product.id})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition active:scale-95">
-                                Agregar <i class="fa-solid fa-plus ml-1"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
 
-        // --- 4. Lógica del Carrito ---
-        function addToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            const existingItem = cart.find(item => item.id === productId);
 
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({ ...product, quantity: 1 });
-            }
+            // 3. Sistema Eléctrico (Transformadores)
 
-            updateCartUI();
+            // true = funcionando, false = destruido
+
+            const [trans1Alive, setTrans1Alive] = useState(true);
+
+            const [trans2Alive, setTrans2Alive] = useState(true);
+
+
+
+            // Estados derivados
+
+            const blackout = !trans1Alive || !trans2Alive; // 5.2 Si explota uno: Apagón total
+
             
-            // Feedback visual simple
-            const btn = event.target.closest('button');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-            btn.classList.replace('bg-blue-600', 'bg-green-600');
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.classList.replace('bg-green-600', 'bg-blue-600');
-            }, 1000);
-        }
 
-        function removeFromCart(productId) {
-            cart = cart.filter(item => item.id !== productId);
-            updateCartUI();
-        }
+            // Referencia para el loop del juego
 
-        function updateQuantity(productId, change) {
-            const item = cart.find(item => item.id === productId);
-            if (item) {
-                item.quantity += change;
-                if (item.quantity <= 0) {
-                    removeFromCart(productId);
-                } else {
-                    updateCartUI();
-                }
-            }
-        }
+            const loopRef = useRef(null);
 
-        function getCartTotal() {
-            return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        }
 
-        function updateCartUI() {
-            const cartItemsContainer = document.getElementById('cart-items');
-            const cartCountBadge = document.getElementById('cart-count');
-            const cartTotalElement = document.getElementById('cart-total');
-            const paypalContainer = document.getElementById('paypal-button-container');
 
-            // Actualizar badge
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartCountBadge.textContent = totalItems;
-            cartCountBadge.classList.toggle('scale-100', totalItems > 0);
-            cartCountBadge.classList.toggle('scale-0', totalItems === 0);
+            // --- LÓGICA DEL BUCLE PRINCIPAL (GAME LOOP) ---
 
-            // Actualizar total
-            cartTotalElement.textContent = `$${getCartTotal().toFixed(2)}`;
+            useEffect(() => {
 
-            // Actualizar lista
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = `
-                    <div class="text-center text-gray-400 mt-10">
-                        <i class="fa-solid fa-cart-arrow-down text-4xl mb-2"></i>
-                        <p>Tu carrito está vacío</p>
-                    </div>`;
-                paypalContainer.style.display = 'none';
-            } else {
-                paypalContainer.style.display = 'block';
-                
-                // Si usamos fallback y no se ha renderizado aún
-                if (window.useFallback && !paypalContainer.innerHTML.includes('Simulación')) {
-                    renderFallbackButton();
-                }
+                if (meltdown) return;
 
-                cartItemsContainer.innerHTML = cart.map(item => `
-                    <div class="flex items-center gap-4 bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
-                        <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md">
-                        <div class="flex-1">
-                            <h4 class="font-medium text-sm line-clamp-1">${item.name}</h4>
-                            <p class="text-blue-600 font-bold">$${(item.price * item.quantity).toFixed(2)}</p>
+
+
+                const tickRate = 1000; // 1 segundo por tick
+
+
+
+                loopRef.current = setInterval(() => {
+
+                    setHeat((prevHeat) => {
+
+                        let heatChange = 0;
+
+
+
+                        // 1.2 Sistema de Temperatura: Aumenta si...
+
+                        
+
+                        // Factor base por potencia (Más potencia = más calor)
+
+                        heatChange += power * 0.05;
+
+
+
+                        // Factor Coolant
+
+                        const hasCoolantFlow = valveOpen && coolantLevel > 0;
+
+                        
+
+                        if (hasCoolantFlow) {
+
+                            // El coolant enfría el sistema
+
+                            heatChange -= 2.5; 
+
+                            // Consumo de coolant
+
+                            setCoolantLevel(prev => Math.max(0, prev - (power * 0.02) - 0.5));
+
+                        } else {
+
+                            // 1.2 La válvula está cerrada o no hay coolant = Calor sube rápido
+
+                            heatChange += 3.0;
+
+                        }
+
+
+
+                        // 1.2 Fallos eléctricos severos (Transformadores rotos generan inestabilidad)
+
+                        if (blackout) {
+
+                            heatChange += 1.5;
+
+                        }
+
+
+
+                        // Calcular nuevo calor
+
+                        let newHeat = prevHeat + heatChange;
+
+
+
+                        // Límites
+
+                        if (newHeat < 0) newHeat = 0;
+
+                        
+
+                        // 1.3 Umbral Crítico
+
+                        if (newHeat >= 100) {
+
+                            setMeltdown(true);
+
+                            return 100;
+
+                        }
+
+
+
+                        return parseFloat(newHeat.toFixed(1));
+
+                    });
+
+
+
+                }, tickRate);
+
+
+
+                return () => clearInterval(loopRef.current);
+
+            }, [power, valveOpen, coolantLevel, blackout, meltdown]);
+
+
+
+            // --- ACCIONES DEL JUGADOR ---
+
+
+
+            const handlePowerChange = (amount) => {
+
+                if (blackout) return; // Difícil controlar sin luz, pero opcional
+
+                setPower(prev => Math.min(100, Math.max(0, prev + amount)));
+
+            };
+
+
+
+            const toggleValve = () => {
+
+                setValveOpen(!valveOpen);
+
+            };
+
+
+
+            const addCoolantBox = () => {
+
+                // 4.2 Cada caja agrega 5% del coolant total
+
+                setCoolantLevel(prev => Math.min(100, prev + 5));
+
+            };
+
+
+
+            const sabotageTransformer = (id) => {
+
+                // 5.2 Destrucción por C4
+
+                if (id === 1) setTrans1Alive(false);
+
+                if (id === 2) setTrans2Alive(false);
+
+            };
+
+
+
+            const repairTransformer = (id) => {
+
+                // 5.3 Recuperación manual
+
+                if (id === 1) setTrans1Alive(true);
+
+                if (id === 2) setTrans2Alive(true);
+
+            };
+
+
+
+            const resetSimulation = () => {
+
+                setHeat(20);
+
+                setPower(30);
+
+                setCoolantLevel(100);
+
+                setValveOpen(true);
+
+                setTrans1Alive(true);
+
+                setTrans2Alive(true);
+
+                setMeltdown(false);
+
+            };
+
+
+
+            // --- RENDERIZADO ---
+
+
+
+            if (meltdown) {
+
+                return (
+
+                    <div className="flex flex-col items-center justify-center h-screen bg-red-950 text-white animate-pulse p-4 text-center">
+
+                        <IconAlertTriangle size={120} className="mb-6 text-red-500" />
+
+                        <h1 className="text-6xl font-bold mb-4">MELTDOWN TOTAL</h1>
+
+                        <p className="text-2xl mb-8">EL NÚCLEO HA EXPLOTADO. EVACUACIÓN FALLIDA.</p>
+
+                        <div className="bg-black/50 p-6 rounded-lg border border-red-500 mb-8 max-w-lg mx-auto">
+
+                            <p className="text-lg">Causa: Temperatura alcanzó 100%.</p>
+
+                            <p className="text-sm text-gray-300 mt-2">Consecuencia: Destrucción total de la planta y radio circundante.</p>
+
                         </div>
-                        <div class="flex flex-col items-end gap-2">
-                            <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-                                <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-xs hover:text-red-500 transition">-</button>
-                                <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
-                                <button onclick="updateQuantity(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-xs hover:text-blue-500 transition">+</button>
+
+                        <button 
+
+                            onClick={resetSimulation}
+
+                            className="px-8 py-4 bg-white text-red-900 font-bold rounded hover:bg-gray-200 transition text-xl flex items-center gap-2 mx-auto"
+
+                        >
+
+                            <IconRotateCcw /> REINICIAR SISTEMA
+
+                        </button>
+
+                    </div>
+
+                );
+
+            }
+
+
+
+            return (
+
+                <div className={`min-h-screen p-4 transition-all duration-1000 ${blackout ? 'bg-gray-900 brightness-50' : 'bg-slate-900'} text-slate-100 font-mono`}>
+
+                    
+
+                    {/* HEADER */}
+
+                    <header className="mb-6 flex flex-col md:flex-row justify-between items-center border-b border-slate-700 pb-4 gap-4">
+
+                        <div className="flex items-center gap-3">
+
+                            <IconActivity className={`${heat > 80 ? 'text-red-500 animate-pulse' : 'text-blue-400'}`} />
+
+                            <h1 className="text-2xl font-bold tracking-wider text-center md:text-left">SISTEMA DE CONTROL DE REACTOR</h1>
+
+                        </div>
+
+                        <div className="flex gap-4">
+
+                            <div className={`px-4 py-1 rounded text-sm font-bold ${blackout ? 'bg-red-900 text-red-200' : 'bg-green-900 text-green-200'}`}>
+
+                                ESTADO DE RED: {blackout ? 'CRÍTICO / BLACKOUT' : 'NOMINAL'}
+
                             </div>
-                            <button onclick="removeFromCart(${item.id})" class="text-xs text-gray-400 hover:text-red-500 underline">Eliminar</button>
+
+                            <div className={`px-4 py-1 rounded text-sm font-bold ${heat > 80 ? 'bg-red-600 text-white animate-bounce' : heat > 50 ? 'bg-yellow-600 text-white' : 'bg-blue-900 text-blue-200'}`}>
+
+                                TEMP: {heat.toFixed(1)}%
+
+                            </div>
+
                         </div>
+
+                    </header>
+
+
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+
+
+                        {/* 1. & 2. PANEL DEL NÚCLEO */}
+
+                        <div className="col-span-1 md:col-span-2 lg:col-span-1 bg-slate-800 rounded-xl border-2 border-slate-600 p-4 shadow-lg relative overflow-hidden">
+
+                            <div className="absolute top-0 right-0 p-2 opacity-20">
+
+                                <IconActivity size={100} />
+
+                            </div>
+
+                            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-blue-300">
+
+                                <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
+
+                                CORE CONTROL (2.2)
+
+                            </h2>
+
+                            
+
+                            {/* Heat Display */}
+
+                            <div className="mb-6">
+
+                                <div className="flex justify-between mb-1">
+
+                                    <span>Temperatura del Núcleo</span>
+
+                                    <span className={`font-bold ${heat > 80 ? 'text-red-500' : 'text-white'}`}>{heat.toFixed(1)}%</span>
+
+                                </div>
+
+                                <div className="w-full bg-slate-900 rounded-full h-6 border border-slate-700 overflow-hidden">
+
+                                    <div 
+
+                                        className={`h-full transition-all duration-300 ${heat > 80 ? 'bg-red-600' : heat > 50 ? 'bg-yellow-500' : 'bg-blue-500'}`}
+
+                                        style={{ width: `${heat}%` }}
+
+                                    ></div>
+
+                                </div>
+
+                                {heat > 80 && <p className="text-red-400 text-xs mt-1 animate-pulse">¡PELIGRO DE MELTDOWN!</p>}
+
+                            </div>
+
+
+
+                            {/* Power Display */}
+
+                            <div className="mb-6">
+
+                                <div className="flex justify-between mb-1">
+
+                                    <span>Nivel de Potencia</span>
+
+                                    <span>{power}%</span>
+
+                                </div>
+
+                                <div className="w-full bg-slate-900 rounded-full h-4 border border-slate-700">
+
+                                    <div 
+
+                                        className="bg-purple-500 h-full rounded-full transition-all duration-300" 
+
+                                        style={{ width: `${power}%` }}
+
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            {/* Controls */}
+
+                            <div className="grid grid-cols-2 gap-4">
+
+                                <button 
+
+                                    onClick={() => handlePowerChange(-10)}
+
+                                    className="bg-slate-700 hover:bg-slate-600 border-b-4 border-slate-900 active:border-b-0 py-3 rounded text-sm font-bold transition-all"
+
+                                >
+
+                                    DECREASE POWER
+
+                                </button>
+
+                                <button 
+
+                                    onClick={() => handlePowerChange(10)}
+
+                                    className="bg-purple-700 hover:bg-purple-600 border-b-4 border-purple-900 active:border-b-0 py-3 rounded text-sm font-bold transition-all"
+
+                                >
+
+                                    INCREASE POWER
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+
+                        {/* 3. & 4. SISTEMA DE COOLANT */}
+
+                        <div className="col-span-1 bg-slate-800 rounded-xl border-2 border-slate-600 p-4 shadow-lg relative">
+
+                            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-cyan-300">
+
+                                <IconDroplet size={20} />
+
+                                COOLANT SYSTEM (3.0 & 4.0)
+
+                            </h2>
+
+
+
+                            {/* Tank Level */}
+
+                            <div className="flex items-end gap-4 h-32 mb-4 bg-slate-900 p-4 rounded-lg border border-slate-700 justify-center">
+
+                                <div className="w-16 h-full bg-slate-800 rounded-lg relative border border-slate-600 overflow-hidden">
+
+                                    <div 
+
+                                        className="absolute bottom-0 w-full bg-cyan-500 transition-all duration-300 opacity-80"
+
+                                        style={{ height: `${coolantLevel}%` }}
+
+                                    >
+
+                                        {/* Bubble effect simulation */}
+
+                                        <div className="w-full h-full animate-pulse bg-cyan-400 opacity-30"></div>
+
+                                    </div>
+
+                                </div>
+
+                                <div className="flex flex-col justify-between h-full py-2">
+
+                                    <span className="text-2xl font-bold text-cyan-400">{coolantLevel.toFixed(0)}%</span>
+
+                                    <span className="text-xs text-slate-400">TANK LEVEL</span>
+
+                                </div>
+
+                            </div>
+
+
+
+                            {/* Valve Control */}
+
+                            <div className="flex items-center justify-between bg-slate-700 p-3 rounded mb-4">
+
+                                <div>
+
+                                    <p className="font-bold">Coolant Rod / Valve</p>
+
+                                    <p className={`text-xs ${valveOpen ? 'text-green-400' : 'text-red-400'}`}>
+
+                                        STATUS: {valveOpen ? 'OPEN (FLOWING)' : 'CLOSED (STAGNANT)'}
+
+                                    </p>
+
+                                </div>
+
+                                <button 
+
+                                    onClick={toggleValve}
+
+                                    className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out ${valveOpen ? 'bg-green-500' : 'bg-red-500'}`}
+
+                                >
+
+                                    <div className={`bg-white w-4 h-4 rounded-full shadow-md transform duration-200 ease-in-out ${valveOpen ? 'translate-x-6' : 'translate-x-0'}`}></div>
+
+                                </button>
+
+                            </div>
+
+
+
+                            {/* Refill Mechanic */}
+
+                            <button 
+
+                                onClick={addCoolantBox}
+
+                                disabled={coolantLevel >= 100}
+
+                                className="w-full bg-cyan-800 hover:bg-cyan-700 disabled:opacity-50 border border-cyan-500 py-2 rounded flex items-center justify-center gap-2 transition"
+
+                            >
+
+                                <IconBox size={16} /> Agregar Caja (+5%)
+
+                            </button>
+
+                        </div>
+
+
+
+                        {/* 5. TRANSFORMADORES ELÉCTRICOS */}
+
+                        <div className="col-span-1 bg-slate-800 rounded-xl border-2 border-slate-600 p-4 shadow-lg">
+
+                            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-yellow-300">
+
+                                <IconZap size={20} />
+
+                                POWER GRID (5.0)
+
+                            </h2>
+
+
+
+                            <div className="space-y-4">
+
+                                {/* Transformer 1 */}
+
+                                <div className={`p-3 rounded border ${trans1Alive ? 'bg-slate-700 border-green-500' : 'bg-red-900/30 border-red-500'}`}>
+
+                                    <div className="flex justify-between items-center mb-2">
+
+                                        <span className="font-bold">Transformador #1</span>
+
+                                        {trans1Alive ? 
+
+                                            <span className="text-green-400 text-xs bg-green-900/50 px-2 py-0.5 rounded">ONLINE</span> : 
+
+                                            <span className="text-red-400 text-xs bg-red-900/50 px-2 py-0.5 rounded animate-pulse">DESTROYED</span>
+
+                                        }
+
+                                    </div>
+
+                                    <div className="flex gap-2">
+
+                                        {trans1Alive ? (
+
+                                            <button onClick={() => sabotageTransformer(1)} className="flex-1 bg-red-900 hover:bg-red-800 text-xs py-1 rounded text-red-200">
+
+                                                SABOTEAR (C4)
+
+                                            </button>
+
+                                        ) : (
+
+                                            <button onClick={() => repairTransformer(1)} className="flex-1 bg-green-700 hover:bg-green-600 text-xs py-1 rounded text-white flex justify-center items-center gap-1">
+
+                                                <IconRotateCcw size={12} /> REPARAR
+
+                                            </button>
+
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+
+
+                                {/* Transformer 2 */}
+
+                                <div className={`p-3 rounded border ${trans2Alive ? 'bg-slate-700 border-green-500' : 'bg-red-900/30 border-red-500'}`}>
+
+                                    <div className="flex justify-between items-center mb-2">
+
+                                        <span className="font-bold">Transformador #2</span>
+
+                                        {trans2Alive ? 
+
+                                            <span className="text-green-400 text-xs bg-green-900/50 px-2 py-0.5 rounded">ONLINE</span> : 
+
+                                            <span className="text-red-400 text-xs bg-red-900/50 px-2 py-0.5 rounded animate-pulse">DESTROYED</span>
+
+                                        }
+
+                                    </div>
+
+                                    <div className="flex gap-2">
+
+                                        {trans2Alive ? (
+
+                                            <button onClick={() => sabotageTransformer(2)} className="flex-1 bg-red-900 hover:bg-red-800 text-xs py-1 rounded text-red-200">
+
+                                                SABOTEAR (C4)
+
+                                            </button>
+
+                                        ) : (
+
+                                            <button onClick={() => repairTransformer(2)} className="flex-1 bg-green-700 hover:bg-green-600 text-xs py-1 rounded text-white flex justify-center items-center gap-1">
+
+                                                <IconRotateCcw size={12} /> REPARAR
+
+                                            </button>
+
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+
+
+                                {/* System Status Summary */}
+
+                                <div className="mt-4 p-2 bg-black/40 rounded text-xs text-center border border-slate-700">
+
+                                    {blackout ? (
+
+                                        <p className="text-red-400 flex items-center justify-center gap-2">
+
+                                            <IconLock size={12} /> SISTEMAS AUXILIARES CAÍDOS
+
+                                        </p>
+
+                                    ) : (
+
+                                        <p className="text-green-400">RED ELÉCTRICA ESTABLE</p>
+
+                                    )}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
                     </div>
-                `).join('');
-            }
-        }
 
-        // --- 5. Control del Modal ---
-        function toggleCart() {
-            const modal = document.getElementById('cart-modal');
-            const sidebar = document.getElementById('cart-sidebar');
-            
-            isCartOpen = !isCartOpen;
 
-            if (isCartOpen) {
-                modal.classList.remove('pointer-events-none', 'opacity-0');
-                sidebar.classList.remove('translate-x-full');
-            } else {
-                modal.classList.add('pointer-events-none', 'opacity-0');
-                sidebar.classList.add('translate-x-full');
-            }
-        }
 
-        // --- 6. Integración de PayPal Robusta (Fallback Automático) ---
-        function renderFallbackButton() {
-            window.useFallback = true;
-            const container = document.getElementById('paypal-button-container');
-            if (!container) return;
-            
-            container.innerHTML = `
-                <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg mb-3 text-xs text-yellow-800">
-                    <i class="fa-solid fa-triangle-exclamation mr-1"></i>
-                    Modo Simulación (Entorno Restringido)
+                    {/* FOOTER / LEYENDA */}
+
+                    <div className="mt-8 text-slate-500 text-xs flex justify-between">
+
+                        <p>SIMULACIÓN DE PROTOCOLOS DE EMERGENCIA v1.0</p>
+
+                        <p>SISTEMAS DE REFRIGERACIÓN: CRÍTICO</p>
+
+                    </div>
+
                 </div>
-                <button onclick="simulatePayment()" class="w-full bg-[#0070ba] hover:bg-[#003087] text-white font-bold py-3 px-4 rounded-full shadow-md transition flex items-center justify-center gap-2">
-                    <i class="fa-brands fa-paypal text-xl"></i> Pagar con PayPal (Simulado)
-                </button>
-                <div class="text-center mt-2">
-                    <span class="text-xs text-gray-400"><i class="fa-solid fa-lock"></i> Pago seguro</span>
-                </div>
-            `;
-        }
 
-        function simulatePayment() {
-            const total = getCartTotal().toFixed(2);
-            // Simular proceso de red
-            const btn = document.querySelector('#paypal-button-container button');
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = '<div class="loader"></div> Procesando...';
-            btn.disabled = true;
+            );
 
-            setTimeout(() => {
-                alert(`¡Pago Simulado Exitoso!\nTotal cobrado: $${total}\n\nEn un entorno real, esto habría procesado el pago vía PayPal.`);
-                cart = [];
-                updateCartUI();
-                toggleCart();
-                btn.innerHTML = originalContent;
-                btn.disabled = false;
-            }, 1500);
-        }
+        };
 
-        function loadPayPalSDK() {
-            if (window.useFallback) return;
 
-            const container = document.getElementById('paypal-button-container');
-            container.innerHTML = '<div class="flex justify-center py-4"><div class="loader"></div></div>';
 
-            const script = document.createElement('script');
-            // Nota: Se agrega disable-funding para simplificar y evitar llamadas extra que suelen fallar en iframes
-            script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD&disable-funding=credit,card`;
-            script.setAttribute('data-namespace', 'paypal_sdk');
-            
-            script.onload = function() {
-                try {
-                    if (window.paypal_sdk && !window.useFallback) {
-                        window.paypal_sdk.Buttons({
-                            createOrder: function(data, actions) {
-                                return actions.order.create({
-                                    purchase_units: [{
-                                        description: "Compra en TechShop",
-                                        amount: { value: getCartTotal().toFixed(2) }
-                                    }]
-                                });
-                            },
-                            onApprove: function(data, actions) {
-                                return actions.order.capture().then(function(details) {
-                                    alert('¡Pago Completado por ' + details.payer.name.given_name + '!');
-                                    cart = [];
-                                    updateCartUI();
-                                    toggleCart();
-                                });
-                            },
-                            onError: function(err) {
-                                console.warn('PayPal SDK Error Interno (onError catch):', err);
-                                renderFallbackButton();
-                            },
-                            style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'paypal' }
-                        }).render('#paypal-button-container');
-                        isPayPalReady = true;
-                    } else {
-                         // Si el objeto no existe tras carga
-                         renderFallbackButton();
-                    }
-                } catch (e) {
-                    console.warn("Fallo al inicializar botones PayPal:", e);
-                    renderFallbackButton();
-                }
-            };
+        const root = ReactDOM.createRoot(document.getElementById('root'));
 
-            script.onerror = function() {
-                console.warn("Error de red cargando script PayPal.");
-                renderFallbackButton();
-            };
-
-            document.body.appendChild(script);
-        }
-
-        // Inicializar
-        renderProducts();
-        updateCartUI();
-        
-        // Cargar PayPal
-        setTimeout(loadPayPalSDK, 1000);
+        root.render(<NuclearControlPanel />);
 
     </script>
+
 </body>
+
 </html>
+
