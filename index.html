@@ -3,250 +3,421 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda Digital - Descargas Instantáneas</title>
+    <title>CV Administrativo - Maximo Hugo Orgaz</title>
+    <!-- Importando fuentes de Google para un look profesional -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Iconos para contacto -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome para Iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
     <style>
+        :root {
+            --primary-color: #2c3e50; /* Azul oscuro corporativo */
+            --accent-color: #3498db; /* Azul claro para detalles */
+            --text-color: #333;
+            --light-bg: #f4f7f6;
+            --white: #ffffff;
+            --sidebar-bg: #2c3e50;
+            --sidebar-text: #ecf0f1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Roboto', sans-serif;
+            background-color: #e0e0e0;
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
         }
-        .gradient-bg {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+
+        /* Contenedor principal estilo hoja A4 */
+        .cv-container {
+            background-color: var(--white);
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            min-height: 1100px;
         }
-        .card-hover {
-            transition: all 0.3s ease;
+
+        /* --- COLUMNA IZQUIERDA (SIDEBAR) --- */
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        /* Animación de carga */
-        .loader {
-            border: 3px solid #f3f3f3;
+
+        /* Estilo para la FOTO DE PERFIL */
+        .profile-photo {
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
-            border-top: 3px solid #3498db;
-            width: 20px;
-            height: 20px;
-            -webkit-animation: spin 1s linear infinite; /* Safari */
-            animation: spin 1s linear infinite;
+            object-fit: cover;
+            /* AJUSTE CLAVE: Centrar horizontalmente (50%) y mostrar el 20% superior verticalmente */
+            object-position: 50% 20%; 
+            margin: 0 auto;
+            display: block;
+            border: 4px solid var(--sidebar-text);
+            background-color: #fff;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        .contact-info h3, .skills-section h3, .languages h3 {
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        .contact-item i {
+            width: 25px;
+            color: var(--accent-color);
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .skill-list {
+            list-style: none;
+        }
+
+        .skill-item {
+            margin-bottom: 12px;
+        }
+
+        .skill-name {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            background-color: #5d6d7e;
+            height: 6px;
+            border-radius: 3px;
+            width: 100%;
+        }
+
+        .progress {
+            background-color: var(--accent-color);
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .soft-skills li {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: baseline;
+        }
+        
+        .soft-skills li::before {
+            content: "•";
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* --- COLUMNA DERECHA (CONTENIDO) --- */
+        .main-content {
+            padding: 40px;
+            background-color: var(--white);
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            line-height: 1.1;
+        }
+
+        h2.job-title {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            font-weight: 400;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            font-size: 0.95rem;
+            color: #555;
+            text-align: justify;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            margin-top: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .section-title i {
+            margin-right: 15px;
+            color: var(--accent-color);
+        }
+
+        .job-entry, .edu-entry {
+            margin-bottom: 25px;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .job-role {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+
+        .job-company {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .job-date {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .job-details {
+            list-style: none;
+        }
+
+        .job-details li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+            color: #444;
+        }
+
+        .job-details li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+        }
+
+        /* --- RESPONSIVE (MÓVIL) --- */
+        @media (max-width: 768px) {
+            .cv-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                padding: 30px;
+            }
+            .main-content {
+                padding: 30px;
+            }
+            body {
+                padding: 0;
+            }
+            .profile-photo {
+                width: 120px;
+                height: 120px;
+            }
+        }
+
+        /* --- IMPRESIÓN --- */
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            .cv-container {
+                box-shadow: none;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+            }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen flex flex-col text-gray-800">
+<body>
 
-    <!-- Navbar -->
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center">
-                    <i class="fa-solid fa-cloud-arrow-down text-blue-600 text-2xl mr-2"></i>
-                    <span class="font-bold text-xl tracking-tight">DigiStore</span>
+    <div class="cv-container">
+        <!-- COLUMNA LATERAL -->
+        <aside class="sidebar">
+            <!-- FOTO DE PERFIL: 
+                 Actualizada con el enlace directo a la nube. 
+                 Ahora se verá correctamente sin necesidad de tener el archivo guardado localmente.
+            -->
+            <img 
+                src="https://res.cloudinary.com/dsfthqppb/image/upload/v1766030005/1765912896180_weuqim.jpg" 
+                alt="Foto de Perfil de Maximo" 
+                class="profile-photo"
+                onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png';"
+            >
+
+            <div class="contact-info">
+                <h3>Contacto</h3>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Palpalá, Jujuy</span>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <div class="hidden md:flex items-center text-sm text-gray-500 mr-4">
-                        <i class="fa-brands fa-paypal mr-1 text-blue-800"></i> Pagos seguros
-                    </div>
-                    <button class="text-gray-500 hover:text-blue-600 transition">
-                        <i class="fa-solid fa-shopping-cart text-xl"></i>
-                    </button>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>388 4854139</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>maxistudioso@gmail.com</span>
                 </div>
             </div>
-        </div>
-    </nav>
 
-    <!-- Header / Hero -->
-    <div class="bg-blue-600 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <h1 class="text-3xl md:text-4xl font-bold mb-2">Archivos Digitales Premium</h1>
-            <p class="text-blue-100">Compra, reclama y descarga al instante.</p>
-        </div>
-    </div>
-
-    <!-- Contenido Principal -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
-        
-        <!-- Filtros / Categorías (Visual) -->
-        <div class="flex justify-center space-x-4 mb-8">
-            <button class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold shadow-md">Todo</button>
-            <button class="px-4 py-2 bg-white text-gray-600 rounded-full text-sm font-semibold hover:bg-gray-100 shadow-sm transition">Música</button>
-            <button class="px-4 py-2 bg-white text-gray-600 rounded-full text-sm font-semibold hover:bg-gray-100 shadow-sm transition">E-books</button>
-        </div>
-
-        <!-- Grid de Productos -->
-        <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Los productos se inyectan aquí con JS -->
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-8 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <span class="font-bold text-lg">DigiStore</span>
-                <p class="text-gray-400 text-sm">© 2024 Todos los derechos reservados.</p>
-            </div>
-            <div class="flex space-x-4 text-2xl text-gray-400">
-                <i class="fa-brands fa-cc-paypal hover:text-white transition cursor-pointer"></i>
-                <i class="fa-brands fa-cc-visa hover:text-white transition cursor-pointer"></i>
-                <i class="fa-brands fa-cc-mastercard hover:text-white transition cursor-pointer"></i>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Modal de "Procesando" -->
-    <div id="processing-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-white rounded-xl p-8 max-w-sm w-full text-center shadow-2xl transform transition-all scale-100">
-            <div class="mb-4 flex justify-center">
-                <div class="loader"></div>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Procesando Pedido...</h3>
-            <p class="text-gray-500 text-sm">Verificando disponibilidad y preparando tu descarga.</p>
-        </div>
-    </div>
-
-    <!-- Modal de Éxito -->
-    <div id="success-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-white rounded-xl p-8 max-w-sm w-full text-center shadow-2xl">
-            <div class="mb-4 flex justify-center text-green-500 text-5xl">
-                <i class="fa-regular fa-circle-check"></i>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">¡Compra Exitosa!</h3>
-            <p class="text-gray-500 text-sm mb-6">Tu archivo se está descargando automáticamente.</p>
-            <button onclick="closeModal('success-modal')" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
-                Cerrar
-            </button>
-        </div>
-    </div>
-
-    <!-- Script Lógica -->
-    <script>
-        // Base de datos de productos (Simulada)
-        const products = [
-            {
-                id: 1,
-                title: "L'amore dice ciao (Slow Take)",
-                artist: "Compositor Desconocido", // Ajustar según corresponda
-                type: "MP3 Audio",
-                price: 0, // 0 significa Gratis
-                coverColor: "bg-indigo-500",
-                icon: "fa-music",
-                url: "https://res.cloudinary.com/dsfthqppb/video/upload/v1755306251/L_amore_dice_ciao_Slow_Take_c1tiyn.mp3"
-            }
-        ];
-
-        // Función para renderizar productos
-        function renderProducts() {
-            const grid = document.getElementById('product-grid');
-            grid.innerHTML = '';
-
-            products.forEach(product => {
-                const isFree = product.price === 0;
-                const priceDisplay = isFree 
-                    ? `<span class="text-green-600 font-bold">GRATIS</span> <span class="text-gray-400 text-xs line-through ml-1">$1.99</span>` 
-                    : `<span class="text-gray-900 font-bold">$${product.price.toFixed(2)}</span>`;
+            <div class="skills-section">
+                <h3>Habilidades Digitales</h3>
                 
-                const btnText = isFree ? "Descargar Gratis" : "Comprar con PayPal";
-                const btnColor = isFree ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700";
-                const icon = isFree ? "fa-download" : "fa-paypal";
+                <ul class="skill-list">
+                    <li class="skill-item">
+                        <span class="skill-name">Microsoft Excel (Planillas y Fórmulas)</span>
+                        <div class="progress-bar"><div class="progress" style="width: 90%;"></div></div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-name">Word / Redacción de Textos</span>
+                        <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-name">Manejo de PC y Periféricos</span>
+                        <div class="progress-bar"><div class="progress" style="width: 100%;"></div></div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-name">Internet y Trámites Online</span>
+                        <div class="progress-bar"><div class="progress" style="width: 90%;"></div></div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-name">Gestión de Archivos Digitales</span>
+                        <div class="progress-bar"><div class="progress" style="width: 85%;"></div></div>
+                    </li>
+                </ul>
+            </div>
 
-                const cardHTML = `
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover flex flex-col">
-                        <!-- Cover Art Simulado -->
-                        <div class="h-40 ${product.coverColor} flex items-center justify-center relative group">
-                            <i class="fa-solid ${product.icon} text-white text-5xl opacity-80 group-hover:scale-110 transition duration-300"></i>
-                            <div class="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                                ${product.type}
-                            </div>
+            <div class="skills-section">
+                <h3>Aptitudes</h3>
+                <ul class="skill-list soft-skills">
+                    <li>Responsabilidad y Puntualidad</li>
+                    <li>Organización y Orden</li>
+                    <li>Capacidad de Aprendizaje Rápido</li>
+                    <li>Atención al Detalle</li>
+                    <li>Trato Cordial y Respetuoso</li>
+                </ul>
+            </div>
+
+            <div class="languages">
+                <h3>Idiomas</h3>
+                <ul class="skill-list soft-skills">
+                    <li>Español (Nativo)</li>
+                    <li>Inglés (Intermedio B1)</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            <header>
+                <h1>Maximo Hugo Orgaz</h1>
+                <h2 class="job-title">Administrativo / Soporte de Oficina</h2>
+                <p class="summary">
+                    Perfil administrativo proactivo y responsable, con sólida capacidad para el manejo de herramientas informáticas y gestión de tareas de oficina. Experiencia práctica trabajando de forma independiente en digitación, organización de archivos y uso avanzado de PC. Me destaco por mi habilidad para resolver problemas prácticos y mi dominio de Excel. Busco una oportunidad laboral donde pueda aplicar mi eficiencia y compromiso para colaborar con el crecimiento de la empresa u organización.
+                </p>
+            </header>
+
+            <section>
+                <h3 class="section-title"><i class="fas fa-briefcase"></i>Experiencia y Servicios Ofrecidos</h3>
+
+                <!-- Entrada 1: Enfocada en tareas administrativas generales -->
+                <div class="job-entry">
+                    <div class="job-header">
+                        <div>
+                            <div class="job-role">Servicios Administrativos y de Soporte PC</div>
+                            <div class="job-company">Trabajo Independiente / Freelance</div>
                         </div>
-                        
-                        <!-- Body -->
-                        <div class="p-6 flex-grow">
-                            <h3 class="font-bold text-lg text-gray-900 leading-tight mb-1">${product.title}</h3>
-                            <p class="text-sm text-gray-500 mb-4">${product.artist}</p>
-                            
-                            <!-- Reproductor Simple de HTML5 -->
-                            <audio controls class="w-full mb-4 h-8">
-                                <source src="${product.url}" type="audio/mpeg">
-                                Tu navegador no soporta el elemento de audio.
-                            </audio>
+                        <div class="job-date">Trayectoria Continua</div>
+                    </div>
+                    <ul class="job-details">
+                        <li><strong>Gestión de Documentos:</strong> Redacción y transcripción de notas, cartas y documentos varios en Word con excelente ortografía y formato profesional.</li>
+                        <li><strong>Planillas de Cálculo (Excel):</strong> Creación y mantenimiento de bases de datos para control de gastos, inventarios pequeños y listas de clientes. Uso de fórmulas para automatizar cálculos.</li>
+                        <li><strong>Digitalización:</strong> Organización de archivos físicos y conversión a formatos digitales (PDF), facilitando el orden y la búsqueda de información.</li>
+                        <li><strong>Trámites Online:</strong> Gestión eficiente de turnos, pagos de servicios y trámites en plataformas gubernamentales o privadas.</li>
+                    </ul>
+                </div>
 
-                            <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
-                                <div>${priceDisplay}</div>
-                            </div>
-                        </div>
-
-                        <!-- Footer / Button -->
-                        <div class="px-6 pb-6">
-                            <button onclick="handlePurchase(${product.id})" class="w-full ${btnColor} text-white font-bold py-3 px-4 rounded-xl transition duration-200 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                                <i class="fa-brands ${icon} mr-2"></i> ${btnText}
-                            </button>
-                            ${!isFree ? `<p class="text-xs text-center text-gray-400 mt-2"><i class="fa-solid fa-lock"></i> Pago procesado por PayPal</p>` : ''}
+                <!-- Entrada 2: Enfocada en atención y gestión -->
+                <div class="job-entry">
+                    <div class="job-header">
+                        <div>
+                            <div class="job-role">Asistencia Operativa y Atención General</div>
+                            <div class="job-company">Proyectos Particulares</div>
                         </div>
                     </div>
-                `;
-                grid.innerHTML += cardHTML;
-            });
-        }
+                    <ul class="job-details">
+                        <li>Atención y asesoramiento a particulares en el uso de herramientas informáticas básicas.</li>
+                        <li>Manejo de agenda y recordatorios para cumplimiento de plazos y pagos.</li>
+                        <li>Búsqueda y recopilación de información en internet para diversos fines administrativos.</li>
+                        <li>Instalación y configuración básica de software de oficina y periféricos (impresoras, escáneres).</li>
+                    </ul>
+                </div>
+            </section>
 
-        // Simular Proceso de Compra/Descarga
-        function handlePurchase(productId) {
-            const product = products.find(p => p.id === productId);
-            if(!product) return;
-
-            // Mostrar modal de procesamiento
-            const processingModal = document.getElementById('processing-modal');
-            processingModal.classList.remove('hidden');
-
-            // Simular tiempo de red (1.5 segundos)
-            setTimeout(() => {
-                processingModal.classList.add('hidden');
+            <section>
+                <h3 class="section-title"><i class="fas fa-graduation-cap"></i>Formación</h3>
                 
-                // Mostrar éxito
-                const successModal = document.getElementById('success-modal');
-                successModal.classList.remove('hidden');
+                <div class="edu-entry">
+                    <div class="job-header">
+                        <div class="job-role">Bachiller con Orientación en Robótica</div>
+                        <div class="job-date">2024 (Egreso)</div>
+                    </div>
+                    <div class="job-company">Secundario Nº 5</div>
+                </div>
 
-                // Iniciar Descarga
-                triggerDownload(product.url, product.title);
+                <div class="edu-entry">
+                    <div class="job-header">
+                        <div class="job-role">Ciclo Básico / Electromecánica</div>
+                        <div class="job-date">2019 - 2024</div>
+                    </div>
+                    <div class="job-company">E.E.T. Nº 1 "Gral. Savio"</div>
+                </div>
+            </section>
+        </main>
+    </div>
 
-            }, 1500);
-        }
-
-        function triggerDownload(url, filename) {
-            // Nota: Debido a políticas de seguridad del navegador (CORS) con archivos externos,
-            // a veces 'download' atributo es ignorado y el navegador reproduce el archivo.
-            // Para asegurar la descarga en un entorno real, el servidor debe enviar headers específicos.
-            
-            // Método 1: Crear un elemento temporal
-            const link = document.createElement('a');
-            link.href = url;
-            // Intentar forzar nombre de archivo
-            link.setAttribute('download', filename + '.mp3'); 
-            link.setAttribute('target', '_blank'); // Abrir en nueva pestaña si la descarga directa falla
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', renderProducts);
-
-    </script>
 </body>
 </html>
