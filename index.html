@@ -44,7 +44,7 @@
             display: grid;
             grid-template-columns: 300px 1fr;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            min-height: 1100px;
+            min-height: 1100px; /* Altura mínima aproximada A4 */
         }
 
         /* --- COLUMNA IZQUIERDA (SIDEBAR) --- */
@@ -268,6 +268,7 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
+            /* Ocultar elementos no deseados al imprimir si fuera necesario */
         }
     </style>
 </head>
@@ -277,8 +278,7 @@
         <!-- COLUMNA LATERAL -->
         <aside class="sidebar">
             <!-- FOTO DE PERFIL: 
-                 Actualizada con el enlace directo a la nube. 
-                 Ahora se verá correctamente sin necesidad de tener el archivo guardado localmente.
+                 Enlace directo. Si falla, usa un icono por defecto.
             -->
             <img 
                 src="https://res.cloudinary.com/dsfthqppb/image/upload/v1766030005/1765912896180_weuqim.jpg" 
@@ -295,7 +295,7 @@
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-phone"></i>
-                    <span>388 4854139</span>
+                    <span>388 485 4139</span>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
@@ -307,10 +307,6 @@
                 <h3>Habilidades Digitales</h3>
                 
                 <ul class="skill-list">
-                    <li class="skill-item">
-                        <span class="skill-name">Microsoft Excel (Planillas y Fórmulas)</span>
-                        <div class="progress-bar"><div class="progress" style="width: 90%;"></div></div>
-                    </li>
                     <li class="skill-item">
                         <span class="skill-name">Word / Redacción de Textos</span>
                         <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
@@ -356,7 +352,7 @@
                 <h1>Maximo Hugo Orgaz</h1>
                 <h2 class="job-title">Administrativo / Soporte de Oficina</h2>
                 <p class="summary">
-                    Perfil administrativo proactivo y responsable, con sólida capacidad para el manejo de herramientas informáticas y gestión de tareas de oficina. Experiencia práctica trabajando de forma independiente en digitación, organización de archivos y uso avanzado de PC. Me destaco por mi habilidad para resolver problemas prácticos y mi dominio de Excel. Busco una oportunidad laboral donde pueda aplicar mi eficiencia y compromiso para colaborar con el crecimiento de la empresa u organización.
+                    Perfil administrativo proactivo y responsable, con sólida capacidad para el manejo de herramientas informáticas y gestión de tareas de oficina. Experiencia práctica trabajando de forma independiente en digitación, organización de archivos y uso avanzado de PC. Me destaco por mi habilidad para resolver problemas prácticos. Busco una oportunidad laboral donde pueda aplicar mi eficiencia y compromiso para colaborar con el crecimiento de la empresa u organización.
                 </p>
             </header>
 
@@ -374,7 +370,6 @@
                     </div>
                     <ul class="job-details">
                         <li><strong>Gestión de Documentos:</strong> Redacción y transcripción de notas, cartas y documentos varios en Word con excelente ortografía y formato profesional.</li>
-                        <li><strong>Planillas de Cálculo (Excel):</strong> Creación y mantenimiento de bases de datos para control de gastos, inventarios pequeños y listas de clientes. Uso de fórmulas para automatizar cálculos.</li>
                         <li><strong>Digitalización:</strong> Organización de archivos físicos y conversión a formatos digitales (PDF), facilitando el orden y la búsqueda de información.</li>
                         <li><strong>Trámites Online:</strong> Gestión eficiente de turnos, pagos de servicios y trámites en plataformas gubernamentales o privadas.</li>
                     </ul>
