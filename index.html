@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Administrativo - Maximo Hugo Orgaz</title>
-    <!-- Importando fuentes de Google para un look profesional -->
+    <title>CV Atención al Cliente - Maximo Hugo Orgaz</title>
+    <!-- Importando fuentes de Google para un look profesional pero moderno -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <!-- Iconos para contacto -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-color: #2c3e50; /* Azul oscuro corporativo */
-            --accent-color: #3498db; /* Azul claro para detalles */
-            --text-color: #333;
-            --light-bg: #f4f7f6;
+            /* Cambio de paleta a colores más amigables y frescos */
+            --primary-color: #0077b6; /* Un azul más vivo y confiable */
+            --accent-color: #48cae4; /* Cian claro para resaltar con energía */
+            --text-color: #444; /* Gris oscuro en vez de negro puro, más suave */
+            --light-bg: #fdfdfd;
             --white: #ffffff;
-            --sidebar-bg: #2c3e50;
-            --sidebar-text: #ecf0f1;
+            --sidebar-bg: #023e8a; /* Azul marino intenso pero no grisáceo */
+            --sidebar-text: #caf0f8;
         }
 
         * {
@@ -28,7 +29,7 @@
 
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #e0e0e0;
+            background-color: #eaeaea;
             color: var(--text-color);
             line-height: 1.6;
             display: flex;
@@ -43,8 +44,10 @@
             max-width: 900px;
             display: grid;
             grid-template-columns: 300px 1fr;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            min-height: 1100px; /* Altura mínima aproximada A4 */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Sombra un poco más suave */
+            min-height: 1100px; 
+            border-radius: 8px; /* Bordes redondeados para un toque moderno */
+            overflow: hidden; /* Para que el borde redondeado aplique a la sidebar */
         }
 
         /* --- COLUMNA IZQUIERDA (SIDEBAR) --- */
@@ -63,11 +66,10 @@
             height: 160px;
             border-radius: 50%;
             object-fit: cover;
-            /* AJUSTE CLAVE: Centrar horizontalmente (50%) y mostrar el 20% superior verticalmente */
             object-position: 50% 20%; 
             margin: 0 auto;
             display: block;
-            border: 4px solid var(--sidebar-text);
+            border: 4px solid var(--accent-color); /* Borde con el color de acento */
             background-color: #fff;
         }
 
@@ -78,13 +80,14 @@
             text-transform: uppercase;
             font-size: 1.1rem;
             letter-spacing: 1px;
+            color: #fff; /* Título en blanco para contraste */
         }
 
         .contact-item {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
-            font-size: 0.9rem;
+            font-size: 0.95rem; /* Un poco más grande para leer fácil */
             word-break: break-all;
         }
 
@@ -111,7 +114,7 @@
         }
 
         .progress-bar {
-            background-color: #5d6d7e;
+            background-color: rgba(255,255,255,0.2); /* Fondo semitransparente */
             height: 6px;
             border-radius: 3px;
             width: 100%;
@@ -125,7 +128,7 @@
 
         .soft-skills li {
             margin-bottom: 8px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             display: flex;
             align-items: baseline;
         }
@@ -135,6 +138,7 @@
             color: var(--accent-color);
             font-weight: bold;
             margin-right: 8px;
+            font-size: 1.2rem;
         }
 
         /* --- COLUMNA DERECHA (CONTENIDO) --- */
@@ -156,17 +160,17 @@
         }
 
         h2.job-title {
-            font-size: 1.2rem;
-            color: var(--accent-color);
-            font-weight: 400;
-            letter-spacing: 1px;
+            font-size: 1.3rem;
+            color: #0096c7; /* Un azul intermedio */
+            font-weight: 500;
             margin-bottom: 20px;
         }
 
         .summary {
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #555;
-            text-align: justify;
+            text-align: left; /* Alineado a la izquierda para que sea más fácil de leer */
+            line-height: 1.7;
         }
 
         .section-title {
@@ -186,7 +190,7 @@
         }
 
         .job-entry, .edu-entry {
-            margin-bottom: 25px;
+            margin-bottom: 30px; /* Más espacio entre trabajos */
         }
 
         .job-header {
@@ -199,37 +203,42 @@
         .job-role {
             font-weight: bold;
             font-size: 1.1rem;
-            color: #2c3e50;
+            color: #333;
         }
 
         .job-company {
-            color: #7f8c8d;
-            font-style: italic;
+            color: #0077b6; /* Destacamos la empresa/tipo de trabajo con color */
+            font-weight: 500;
         }
 
         .job-date {
-            color: var(--accent-color);
-            font-weight: bold;
+            color: #888;
+            font-weight: normal;
             font-size: 0.9rem;
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 10px;
         }
 
         .job-details {
             list-style: none;
+            margin-top: 10px;
         }
 
         .job-details li {
             position: relative;
             padding-left: 20px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-size: 0.95rem;
             color: #444;
         }
 
         .job-details li::before {
-            content: "▹";
+            content: "✓"; /* Check en vez de flecha, más positivo */
             position: absolute;
             left: 0;
             color: var(--accent-color);
+            font-weight: bold;
         }
 
         /* --- RESPONSIVE (MÓVIL) --- */
@@ -268,7 +277,6 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            /* Ocultar elementos no deseados al imprimir si fuera necesario */
         }
     </style>
 </head>
@@ -277,9 +285,6 @@
     <div class="cv-container">
         <!-- COLUMNA LATERAL -->
         <aside class="sidebar">
-            <!-- FOTO DE PERFIL: 
-                 Enlace directo. Si falla, usa un icono por defecto.
-            -->
             <img 
                 src="https://res.cloudinary.com/dsfthqppb/image/upload/v1766030005/1765912896180_weuqim.jpg" 
                 alt="Foto de Perfil de Maximo" 
@@ -304,36 +309,36 @@
             </div>
 
             <div class="skills-section">
-                <h3>Habilidades Digitales</h3>
+                <h3>Habilidades Útiles</h3>
                 
                 <ul class="skill-list">
                     <li class="skill-item">
-                        <span class="skill-name">Word / Redacción de Textos</span>
-                        <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
-                    </li>
-                    <li class="skill-item">
-                        <span class="skill-name">Manejo de PC y Periféricos</span>
+                        <span class="skill-name">Manejo de PC y Celular</span>
                         <div class="progress-bar"><div class="progress" style="width: 100%;"></div></div>
                     </li>
                     <li class="skill-item">
-                        <span class="skill-name">Internet y Trámites Online</span>
+                        <span class="skill-name">Redes Sociales / WhatsApp</span>
+                        <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
+                    </li>
+                    <li class="skill-item">
+                        <span class="skill-name">Redacción Clara</span>
                         <div class="progress-bar"><div class="progress" style="width: 90%;"></div></div>
                     </li>
                     <li class="skill-item">
-                        <span class="skill-name">Gestión de Archivos Digitales</span>
-                        <div class="progress-bar"><div class="progress" style="width: 85%;"></div></div>
+                        <span class="skill-name">Búsqueda rápida en Google</span>
+                        <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
                     </li>
                 </ul>
             </div>
 
             <div class="skills-section">
-                <h3>Aptitudes</h3>
+                <h3>Sobre Mí</h3>
                 <ul class="skill-list soft-skills">
-                    <li>Responsabilidad y Puntualidad</li>
-                    <li>Organización y Orden</li>
-                    <li>Capacidad de Aprendizaje Rápido</li>
-                    <li>Atención al Detalle</li>
-                    <li>Trato Cordial y Respetuoso</li>
+                    <li>Muy paciente explicando</li>
+                    <li>Amable y respetuoso</li>
+                    <li>Aprendo rápido lo que sea</li>
+                    <li>Siempre puntual</li>
+                    <li>Me gusta ayudar</li>
                 </ul>
             </div>
 
@@ -341,7 +346,7 @@
                 <h3>Idiomas</h3>
                 <ul class="skill-list soft-skills">
                     <li>Español (Nativo)</li>
-                    <li>Inglés (Intermedio B1)</li>
+                    <li>Inglés (Me defiendo / Básico)</li>
                 </ul>
             </div>
         </aside>
@@ -350,62 +355,65 @@
         <main class="main-content">
             <header>
                 <h1>Maximo Hugo Orgaz</h1>
-                <h2 class="job-title">Administrativo / Soporte de Oficina</h2>
+                <h2 class="job-title">Atención al Cliente / Soporte</h2>
                 <p class="summary">
-                    Perfil administrativo proactivo y responsable, con sólida capacidad para el manejo de herramientas informáticas y gestión de tareas de oficina. Experiencia práctica trabajando de forma independiente en digitación, organización de archivos y uso avanzado de PC. Me destaco por mi habilidad para resolver problemas prácticos. Busco una oportunidad laboral donde pueda aplicar mi eficiencia y compromiso para colaborar con el crecimiento de la empresa u organización.
+                    ¡Hola! Soy Maximo. Me considero una persona sociable, paciente y con muchas ganas de trabajar. Tengo facilidad para la tecnología y me gusta ayudar a las personas a resolver sus dudas o problemas de forma sencilla. Busco una oportunidad en atención al público o ventas donde pueda aportar mi buena energía, mi responsabilidad y mis ganas de aprender cosas nuevas todos los días.
                 </p>
             </header>
 
             <section>
-                <h3 class="section-title"><i class="fas fa-briefcase"></i>Experiencia y Servicios Ofrecidos</h3>
+                <h3 class="section-title"><i class="fas fa-smile"></i>Experiencia y Trato con Gente</h3>
 
-                <!-- Entrada 1: Enfocada en tareas administrativas generales -->
+                <!-- Entrada 1 -->
                 <div class="job-entry">
                     <div class="job-header">
                         <div>
-                            <div class="job-role">Servicios Administrativos y de Soporte PC</div>
-                            <div class="job-company">Trabajo Independiente / Freelance</div>
+                            <div class="job-role">Ayuda en Trámites y Tareas Digitales</div>
+                            <div class="job-company">Freelance / Por cuenta propia</div>
                         </div>
-                        <div class="job-date">Trayectoria Continua</div>
+                        <div class="job-date">Actualidad</div>
                     </div>
                     <ul class="job-details">
-                        <li><strong>Gestión de Documentos:</strong> Redacción y transcripción de notas, cartas y documentos varios en Word con excelente ortografía y formato profesional.</li>
-                        <li><strong>Digitalización:</strong> Organización de archivos físicos y conversión a formatos digitales (PDF), facilitando el orden y la búsqueda de información.</li>
-                        <li><strong>Trámites Online:</strong> Gestión eficiente de turnos, pagos de servicios y trámites en plataformas gubernamentales o privadas.</li>
+                        <li><strong>Atención Personalizada:</strong> Ayudo a personas a redactar notas y cartas, asegurándome de que queden bien escritas y presentables.</li>
+                        <li><strong>Resolución de Problemas:</strong> Asisto a conocidos para realizar trámites por internet (turnos, pagos), explicándoles paso a paso con paciencia.</li>
+                        <li><strong>Digitalización:</strong> Paso documentos de papel a la compu (PDF) para que la gente tenga sus cosas ordenadas y seguras.</li>
                     </ul>
                 </div>
 
-                <!-- Entrada 2: Enfocada en atención y gestión -->
+                <!-- Entrada 2 -->
                 <div class="job-entry">
                     <div class="job-header">
                         <div>
-                            <div class="job-role">Asistencia Operativa y Atención General</div>
+                            <div class="job-role">Soporte Básico y Asistencia</div>
                             <div class="job-company">Proyectos Particulares</div>
                         </div>
                     </div>
                     <ul class="job-details">
-                        <li>Atención y asesoramiento a particulares en el uso de herramientas informáticas básicas.</li>
-                        <li>Manejo de agenda y recordatorios para cumplimiento de plazos y pagos.</li>
-                        <li>Búsqueda y recopilación de información en internet para diversos fines administrativos.</li>
-                        <li>Instalación y configuración básica de software de oficina y periféricos (impresoras, escáneres).</li>
+                        <li>Ayudo a personas mayores o con poca experiencia a usar la computadora y el celular.</li>
+                        <li>Organizo agendas y recordatorios para que no se pasen fechas importantes.</li>
+                        <li>Busco información en internet rápidamente para resolver dudas o consultas puntuales.</li>
+                        <li>Configuro impresoras y programas básicos para que todo funcione bien.</li>
                     </ul>
                 </div>
             </section>
 
             <section>
-                <h3 class="section-title"><i class="fas fa-graduation-cap"></i>Formación</h3>
+                <h3 class="section-title"><i class="fas fa-user-graduate"></i>Estudios</h3>
                 
                 <div class="edu-entry">
                     <div class="job-header">
-                        <div class="job-role">Bachiller con Orientación en Robótica</div>
-                        <div class="job-date">2024 (Egreso)</div>
+                        <div class="job-role">Secundario Completo (Robótica)</div>
+                        <div class="job-date">2024</div>
                     </div>
                     <div class="job-company">Secundario Nº 5</div>
+                    <ul class="job-details" style="margin-top:5px;">
+                        <li style="font-style: italic;">Título de Bachiller obtenido.</li>
+                    </ul>
                 </div>
 
                 <div class="edu-entry">
                     <div class="job-header">
-                        <div class="job-role">Ciclo Básico / Electromecánica</div>
+                        <div class="job-role">Ciclo Básico Electromecánica</div>
                         <div class="job-date">2019 - 2024</div>
                     </div>
                     <div class="job-company">E.E.T. Nº 1 "Gral. Savio"</div>
