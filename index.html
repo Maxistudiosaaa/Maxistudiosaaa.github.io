@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CV Profesional - Maximo Hugo Orgaz</title>
-    <!-- Importando fuentes de Google -->
+    <title>Professional CV - Maximo Hugo Orgaz</title>
+    <!-- Importing Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Iconos -->
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-color: #0F4C75; /* Azul oscuro profesional */
-            --secondary-color: #3282B8; /* Azul intermedio */
-            --accent-color: #BBE1FA; /* Azul claro para contrastes */
+            --primary-color: #0F4C75; /* Dark professional blue */
+            --secondary-color: #3282B8; /* Intermediate blue */
+            --accent-color: #BBE1FA; /* Light blue for contrast */
             --text-color: #333333;
             --text-light: #666666;
             --white: #ffffff;
-            --sidebar-bg: #1B262C; /* Casi negro/azul muy oscuro para elegancia */
+            --sidebar-bg: #1B262C; /* Almost black/very dark blue for elegance */
             --sidebar-text: #f0f0f0;
         }
 
@@ -37,19 +37,19 @@
             padding: 20px;
         }
 
-        /* Hoja A4 */
+        /* A4 Sheet */
         .cv-container {
             background-color: var(--white);
             width: 100%;
-            max-width: 210mm; /* Ancho estándar A4 */
-            min-height: 297mm; /* Alto estándar A4 */
+            max-width: 210mm; /* A4 Standard Width */
+            min-height: 297mm; /* A4 Standard Height */
             display: grid;
             grid-template-columns: 30% 70%;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
             overflow: hidden; 
         }
 
-        /* --- SIDEBAR (IZQUIERDA) --- */
+        /* --- SIDEBAR (LEFT) --- */
         .sidebar {
             background-color: var(--sidebar-bg);
             color: var(--sidebar-text);
@@ -60,13 +60,12 @@
             text-align: left;
         }
 
-        /* Restaurado al estilo original: más grande y centrado sin márgenes negativos */
         .profile-photo {
             width: 160px;
             height: 160px;
             border-radius: 50%;
             object-fit: cover;
-            object-position: center 20%; /* Ajustado para subir a la persona dentro del marco */
+            object-position: center 20%;
             margin: 0 auto; 
             display: block;
             border: 4px solid var(--secondary-color);
@@ -87,8 +86,8 @@
             display: flex;
             align-items: center;
             margin-bottom: 12px;
-            font-size: 0.85rem; /* Ajustado ligeramente para mejor espacio */
-            word-break: break-all; /* CRUCIAL: Fuerza a que el texto baje de línea si es muy largo */
+            font-size: 0.85rem;
+            word-break: break-all;
             line-height: 1.4;
         }
 
@@ -97,7 +96,7 @@
             color: var(--secondary-color);
             margin-right: 8px;
             font-size: 1rem;
-            flex-shrink: 0; /* Asegura que el icono no se aplaste */
+            flex-shrink: 0;
         }
 
         .sidebar-list {
@@ -118,7 +117,7 @@
             margin-right: 8px;
         }
 
-        /* Barras de habilidad */
+        /* Skill Bars */
         .skill-item {
             margin-bottom: 12px;
         }
@@ -140,7 +139,7 @@
             border-radius: 3px;
         }
 
-        /* --- CONTENIDO PRINCIPAL (DERECHA) --- */
+        /* --- MAIN CONTENT (RIGHT) --- */
         .main-content {
             padding: 40px;
             background-color: var(--white);
@@ -255,7 +254,6 @@
             }
             .sidebar {
                 padding: 20px;
-                /* Eliminado el padding-top extra que ya no es necesario */
             }
             .main-content {
                 padding: 25px;
@@ -274,23 +272,22 @@
 <body>
 
     <div class="cv-container">
-        <!-- COLUMNA IZQUIERDA -->
+        <!-- LEFT COLUMN -->
         <aside class="sidebar">
-            <!-- NOTA: Reemplaza este link con tu foto real si tienes una mejor versión -->
             <img src="https://res.cloudinary.com/dsfthqppb/image/upload/v1766030005/1765912896180_weuqim.jpg" 
                  alt="Maximo Hugo Orgaz" 
                  class="profile-photo"
                  onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
 
             <div class="contact-section">
-                <h3>Contacto</h3>
+                <h3>Contact</h3>
                 <div class="contact-item">
                     <i class="fas fa-map-marker-alt"></i>
                     <span>Palpalá, Jujuy</span>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-phone-alt"></i>
-                    <span>388 485 4139</span>
+                    <span>+54 388 485 4139</span>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
@@ -299,113 +296,113 @@
             </div>
 
             <div class="skills-section">
-                <h3>Habilidades Técnicas</h3>
+                <h3>Technical Skills</h3>
                 
                 <div class="skill-item">
-                    <span class="skill-name">Ofimática y Gestión Digital</span>
+                    <span class="skill-name">Office Automation & Digital Mgmt</span>
                     <div class="progress-bg"><div class="progress-fill" style="width: 95%;"></div></div>
                 </div>
                 <div class="skill-item">
-                    <span class="skill-name">Soporte Técnico (Hardware/Software)</span>
+                    <span class="skill-name">Tech Support (Hardware/Software)</span>
                     <div class="progress-bg"><div class="progress-fill" style="width: 90%;"></div></div>
                 </div>
                 <div class="skill-item">
-                    <span class="skill-name">Gestión de Redes y Comunicación</span>
+                    <span class="skill-name">Network Management & Comms</span>
                     <div class="progress-bg"><div class="progress-fill" style="width: 90%;"></div></div>
                 </div>
                 <div class="skill-item">
-                    <span class="skill-name">Investigación Web</span>
+                    <span class="skill-name">Web Research</span>
                     <div class="progress-bg"><div class="progress-fill" style="width: 100%;"></div></div>
                 </div>
             </div>
 
             <div class="soft-skills">
-                <h3>Aptitudes</h3>
+                <h3>Soft Skills</h3>
                 <ul class="sidebar-list">
-                    <li>Comunicación Asertiva</li>
-                    <li>Resolución de Problemas</li>
-                    <li>Adaptabilidad y Aprendizaje</li>
-                    <li>Atención al Detalle</li>
-                    <li>Puntualidad y Compromiso</li>
+                    <li>Assertive Communication</li>
+                    <li>Problem Solving</li>
+                    <li>Adaptability & Learning</li>
+                    <li>Attention to Detail</li>
+                    <li>Punctuality & Commitment</li>
                 </ul>
             </div>
 
             <div class="languages">
-                <h3>Idiomas</h3>
+                <h3>Languages</h3>
                 <ul class="sidebar-list">
-                    <li>Español (Nativo)</li>
-                    <li>Inglés (Básico - A2)</li>
+                    <li>Spanish (Native)</li>
+                    <li>English (Basic - A2)</li>
                 </ul>
             </div>
         </aside>
 
-        <!-- COLUMNA DERECHA -->
+        <!-- RIGHT COLUMN -->
         <main class="main-content">
             <header>
                 <h1>Maximo Hugo Orgaz</h1>
-                <h2 class="job-title">Soporte Técnico y Atención al Cliente</h2>
+                <h2 class="job-title">Technical Support & Customer Service</h2>
                 <p class="summary">
-                    Profesional proactivo con sólida capacidad para la asistencia técnica y la gestión administrativa digital. Especializado en facilitar la adaptación tecnológica a usuarios y optimizar procesos organizativos. Cuento con una clara orientación al servicio al cliente, paciencia para la resolución de consultas complejas y habilidades comunicativas para transmitir información técnica de manera sencilla. Busco aportar eficiencia y orden en entornos dinámicos de atención al público o soporte administrativo.
+                    Proactive professional with solid skills in technical assistance and digital administrative management. Specialized in facilitating technological adaptation for users and optimizing organizational processes. I possess a strong customer service orientation, patience for resolving complex queries, and the communication skills to convey technical information simply. Seeking to provide efficiency and order in dynamic customer service or administrative support environments.
                 </p>
             </header>
 
             <section>
-                <h3 class="section-title"><i class="fas fa-briefcase"></i>Experiencia Profesional</h3>
+                <h3 class="section-title"><i class="fas fa-briefcase"></i>Professional Experience</h3>
 
-                <!-- Experiencia 1 -->
+                <!-- Experience 1 -->
                 <div class="entry-container">
                     <div class="entry-header">
                         <div>
-                            <div class="entry-role">Gestor de Trámites y Asistencia Digital</div>
-                            <div class="entry-company">Profesional Independiente</div>
+                            <div class="entry-role">Administrative & Digital Assistance Manager</div>
+                            <div class="entry-company">Freelance Professional</div>
                         </div>
-                        <div class="entry-date">Marzo 2023 - Actualidad</div>
+                        <div class="entry-date">March 2023 - Present</div>
                     </div>
                     <ul class="entry-details">
-                        <li><strong>Redacción y Comunicación:</strong> Elaboré y corregí documentación formal y cartas administrativas, garantizando una presentación profesional y sin errores para diversos clientes.</li>
-                        <li><strong>Gestión de Trámites Online:</strong> Gestioné exitosamente la obtención de turnos, pagos y certificaciones digitales, reduciendo tiempos de espera y resolviendo barreras tecnológicas para los usuarios.</li>
-                        <li><strong>Digitalización Documental:</strong> Lideré procesos de digitalización (físico a PDF), creando sistemas de archivo organizados y seguros para facilitar el acceso a la información.</li>
+                        <li><strong>Drafting and Communication:</strong> Drafted and corrected formal documentation and administrative letters, ensuring a professional, error-free presentation for various clients.</li>
+                        <li><strong>Online Procedures Management:</strong> Successfully managed appointments, payments, and digital certifications, reducing waiting times and resolving technological barriers for users.</li>
+                        <li><strong>Document Digitization:</strong> Led digitization processes (physical to PDF), creating organized and secure filing systems to facilitate access to information.</li>
                     </ul>
                 </div>
 
-                <!-- Experiencia 2 -->
+                <!-- Experience 2 -->
                 <div class="entry-container">
                     <div class="entry-header">
                         <div>
-                            <div class="entry-role">Soporte Técnico y Asistente Personal</div>
-                            <div class="entry-company">Servicios Particulares</div>
+                            <div class="entry-role">Technical Support & Personal Assistant</div>
+                            <div class="entry-company">Private Services</div>
                         </div>
-                        <div class="entry-date">Enero 2022 - Febrero 2023</div>
+                        <div class="entry-date">January 2022 - February 2023</div>
                     </div>
                     <ul class="entry-details">
-                        <li><strong>Capacitación Tecnológica:</strong> Instruí a usuarios adultos mayores en el uso de dispositivos móviles y ordenadores, logrando su autonomía digital en tareas cotidianas.</li>
-                        <li><strong>Gestión de Agenda:</strong> Coordiné y organicé calendarios y recordatorios críticos, asegurando el cumplimiento del 100% de los plazos y compromisos.</li>
-                        <li><strong>Mantenimiento Técnico:</strong> Configuré y optimicé equipos informáticos e impresoras, resolviendo incidencias técnicas de primer nivel de forma inmediata.</li>
-                        <li><strong>Investigación Eficiente:</strong> Ejecuté búsquedas de información precisa en la web para resolver dudas puntuales, agilizando la toma de decisiones del cliente.</li>
+                        <li><strong>Technological Training:</strong> Instructed elderly users in the use of mobile devices and computers, achieving their digital autonomy in daily tasks.</li>
+                        <li><strong>Agenda Management:</strong> Coordinated and organized calendars and critical reminders, ensuring 100% compliance with deadlines and commitments.</li>
+                        <li><strong>Technical Maintenance:</strong> Configured and optimized computer equipment and printers, resolving Tier 1 technical incidents immediately.</li>
+                        <li><strong>Efficient Research:</strong> Executed precise web information searches to resolve specific queries, speeding up client decision-making.</li>
                     </ul>
                 </div>
             </section>
 
             <section>
-                <h3 class="section-title"><i class="fas fa-graduation-cap"></i>Formación Académica</h3>
+                <h3 class="section-title"><i class="fas fa-graduation-cap"></i>Education</h3>
                 
                 <div class="entry-container">
                     <div class="entry-header">
                         <div>
-                            <div class="entry-role">Bachiller con Orientación en Robótica</div>
-                            <div class="entry-company">Escuela Secundaria Nº 5</div>
+                            <div class="entry-role">High School Diploma with Orientation in Robotics</div>
+                            <div class="entry-company">Secondary School Nº 5</div>
                         </div>
-                        <div class="entry-date">Diciembre 2024</div>
+                        <div class="entry-date">December 2024</div>
                     </div>
                 </div>
 
                 <div class="entry-container">
                     <div class="entry-header">
                         <div>
-                            <div class="entry-role">Ciclo Básico en Electromecánica</div>
+                            <div class="entry-role">Basic Cycle in Electromechanics</div>
                             <div class="entry-company">E.E.T. Nº 1 "Gral. Savio"</div>
                         </div>
-                        <div class="entry-date">Marzo 2019 - Diciembre 2021</div>
+                        <div class="entry-date">March 2019 - December 2021</div>
                     </div>
                 </div>
             </section>
