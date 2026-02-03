@@ -1,413 +1,789 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional CV - Maximo Hugo Orgaz</title>
-    <!-- Importing Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <title>Protocolo Voight-Kampff Inverso</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --primary-color: #0F4C75; /* Dark professional blue */
-            --secondary-color: #3282B8; /* Intermediate blue */
-            --accent-color: #BBE1FA; /* Light blue for contrast */
-            --text-color: #333333;
-            --text-light: #666666;
-            --white: #ffffff;
-            --sidebar-bg: #1B262C; /* Almost black/very dark blue for elegance */
-            --sidebar-text: #f0f0f0;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            --bg-color: #0f172a;
+            --table-color: #1e293b;
+            --accent-glow: rgba(56, 189, 248, 0.5);
+            --danger-glow: rgba(239, 68, 68, 0.5);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #e0e0e0;
-            color: var(--text-color);
-            line-height: 1.6;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        /* A4 Sheet */
-        .cv-container {
-            background-color: var(--white);
-            width: 100%;
-            max-width: 210mm; /* A4 Standard Width */
-            min-height: 297mm; /* A4 Standard Height */
-            display: grid;
-            grid-template-columns: 30% 70%;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            overflow: hidden; 
-        }
-
-        /* --- SIDEBAR (LEFT) --- */
-        .sidebar {
-            background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            padding: 30px 20px;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 25px;
-            text-align: left;
+            overflow: hidden;
         }
 
-        .profile-photo {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            object-fit: cover;
-            object-position: center 20%;
-            margin: 0 auto; 
-            display: block;
-            border: 4px solid var(--secondary-color);
-            background-color: #fff;
-        }
-
-        .sidebar h3 {
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            font-size: 1rem;
-            letter-spacing: 1.5px;
-            color: var(--accent-color);
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 0.85rem;
-            word-break: break-all;
-            line-height: 1.4;
-        }
-
-        .contact-item i {
-            width: 25px;
-            color: var(--secondary-color);
-            margin-right: 8px;
-            font-size: 1rem;
-            flex-shrink: 0;
-        }
-
-        .sidebar-list {
-            list-style: none;
-        }
-
-        .sidebar-list li {
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: baseline;
-        }
-
-        .sidebar-list li::before {
-            content: "•";
-            color: var(--secondary-color);
-            font-weight: bold;
-            margin-right: 8px;
-        }
-
-        /* Skill Bars */
-        .skill-item {
-            margin-bottom: 12px;
-        }
-        .skill-name {
-            display: block;
-            font-size: 0.85rem;
-            margin-bottom: 3px;
-            font-weight: 500;
-        }
-        .progress-bg {
-            background-color: rgba(255,255,255,0.1);
-            height: 5px;
-            border-radius: 3px;
-            width: 100%;
-        }
-        .progress-fill {
-            background-color: var(--secondary-color);
-            height: 100%;
-            border-radius: 3px;
-        }
-
-        /* --- MAIN CONTENT (RIGHT) --- */
-        .main-content {
-            padding: 40px;
-            background-color: var(--white);
-        }
-
+        /* --- Header & HUD --- */
         header {
-            margin-bottom: 30px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 20px;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            color: var(--primary-color);
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            letter-spacing: 1px;
-        }
-
-        h2.job-title {
-            font-size: 1.2rem;
-            color: var(--text-light);
-            font-weight: 400;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
-
-        .summary {
-            font-size: 0.95rem;
-            color: #444;
-            text-align: justify;
-            line-height: 1.6;
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            color: var(--primary-color);
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            margin-top: 25px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .section-title i {
-            margin-right: 12px;
-            color: var(--secondary-color);
-            font-size: 1.1rem;
-        }
-
-        .entry-container {
-            margin-bottom: 25px;
-        }
-
-        .entry-header {
+            padding: 0.8rem 1.5rem;
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid #334155;
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 5px;
-            flex-wrap: wrap;
+            align-items: center;
+            z-index: 20;
         }
 
-        .entry-role {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: #222;
+        .game-status {
+            display: flex;
+            gap: 20px;
+            align-items: center;
         }
 
-        .entry-company {
-            font-weight: 500;
-            color: var(--primary-color);
-            font-size: 0.95rem;
-            margin-bottom: 5px;
+        .meter-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
         }
 
-        .entry-date {
-            font-size: 0.85rem;
-            color: #666;
-            font-weight: 500;
-            background: #f4f4f4;
+        .suspicion-bar-bg {
+            width: 150px;
+            height: 10px;
+            background: #334155;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .suspicion-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+            transition: width 0.5s ease;
+        }
+
+        .timer {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            border: 1px solid #475569;
             padding: 2px 8px;
             border-radius: 4px;
         }
 
-        .entry-details {
-            list-style: none;
-            margin-top: 8px;
-        }
-
-        .entry-details li {
+        /* --- Simulation Area --- */
+        .simulation-area {
+            flex: 1;
             position: relative;
-            padding-left: 18px;
-            margin-bottom: 6px;
-            font-size: 0.95rem;
-            color: #555;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 70%);
         }
 
-        .entry-details li::before {
-            content: "▹";
+        .table {
+            width: 300px;
+            height: 300px;
+            background: var(--table-color);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 60px var(--accent-glow), inset 0 0 30px rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 4px solid #334155;
+            transition: all 0.5s ease;
+        }
+
+        .table.alert {
+            box-shadow: 0 0 80px var(--danger-glow);
+            border-color: #ef4444;
+        }
+
+        .core-light {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #fff, #38bdf8);
+            border-radius: 50%;
+            filter: blur(8px);
+            opacity: 0.6;
+            animation: pulse-core 4s infinite ease-in-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- AI Seats --- */
+        .ai-seat {
             position: absolute;
-            left: 0;
-            color: var(--secondary-color);
+            width: 90px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .seat-1 { top: -70px; left: 50%; transform: translateX(-50%); }
+        .seat-2 { right: -70px; top: 50%; transform: translateY(-50%); }
+        .seat-3 { bottom: -70px; left: 50%; transform: translateX(-50%); }
+        .seat-4 { left: -70px; top: 50%; transform: translateY(-50%); }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #020617;
+            border: 2px solid #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+
+        .ai-seat.speaking .avatar {
+            border-color: #fff;
+            box-shadow: 0 0 25px currentColor;
+            transform: scale(1.15);
+        }
+
+        .ai-seat.suspicious .avatar {
+            animation: shake 0.5s;
+            border-color: #ef4444;
+        }
+
+        .ai-name {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: rgba(0,0,0,0.7);
+            padding: 3px 10px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* --- Chat Bubbles --- */
+        .chat-bubble {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 12px 18px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            max-width: 220px;
+            width: max-content;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            z-index: 10;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        /* Bubble Tails */
+        .chat-bubble::after {
+            content: '';
+            position: absolute;
+            border-width: 8px;
+            border-style: solid;
+        }
+
+        .seat-1 .chat-bubble { bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-10px); border-bottom-color: transparent; }
+        .seat-1 .chat-bubble::after { top: 100%; left: 50%; margin-left: -8px; border-color: rgba(15,23,42,0.9) transparent transparent transparent; }
+        
+        .seat-2 .chat-bubble { right: 110%; top: 50%; transform: translateY(-50%); }
+        .seat-2 .chat-bubble::after { left: 100%; top: 50%; margin-top: -8px; border-color: transparent transparent transparent rgba(15,23,42,0.9); }
+
+        .seat-3 .chat-bubble { top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); }
+        .seat-3 .chat-bubble::after { bottom: 100%; left: 50%; margin-left: -8px; border-color: transparent transparent rgba(15,23,42,0.9) transparent; }
+
+        .seat-4 .chat-bubble { left: 110%; top: 50%; transform: translateY(-50%); }
+        .seat-4 .chat-bubble::after { right: 100%; top: 50%; margin-top: -8px; border-color: transparent rgba(15,23,42,0.9) transparent transparent; }
+
+        .ai-seat.speaking .chat-bubble { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+        .seat-2.speaking .chat-bubble, .seat-4.speaking .chat-bubble { transform: translateY(-50%) scale(1); }
+
+
+        /* --- Player Interface --- */
+        .player-interface {
+            background: #020617;
+            border-top: 1px solid #334155;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 180px; /* Fixed height for consistency */
+        }
+
+        .log-container {
+            flex: 1;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            padding-right: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .log-entry { opacity: 0.8; }
+        .log-entry.player { color: #38bdf8; font-weight: bold; }
+        .log-entry.system { color: #eab308; font-style: italic; }
+        .log-entry.danger { color: #ef4444; font-weight: bold; }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="text"]:focus { border-color: #38bdf8; }
+        input[type="text"]:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .send-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 6px;
+            cursor: pointer;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
+        
+        .send-btn:hover { background: #2563eb; }
+        .send-btn:disabled { background: #475569; }
 
-        /* --- RESPONSIVE --- */
-        @media (max-width: 768px) {
-            .cv-container {
-                grid-template-columns: 1fr;
-                min-height: auto;
-            }
-            .sidebar {
-                padding: 20px;
-            }
-            .main-content {
-                padding: 25px;
-            }
-            .entry-header {
-                flex-direction: column;
-            }
+        /* --- Overlay (Game Over / Win) --- */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
+        
+        .overlay.active { display: flex; animation: fadeIn 0.5s; }
+        .overlay h2 { font-size: 3rem; margin-bottom: 1rem; }
+        .overlay p { font-size: 1.2rem; color: #cbd5e1; max-width: 600px; margin-bottom: 2rem; }
+        .restart-btn {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .restart-btn:hover { background: #fff; color: #000; }
 
-        @media print {
-            body { background: none; padding: 0; }
-            .cv-container { box-shadow: none; margin: 0; width: 100%; }
+        /* IA Colors */
+        .ai-logic { --theme: #3b82f6; }   /* Blue */
+        .ai-creative { --theme: #d946ef; } /* Magenta */
+        .ai-rebel { --theme: #f59e0b; }    /* Amber */
+        .ai-empath { --theme: #10b981; }   /* Emerald */
+
+        .ai-seat .avatar { color: var(--theme); }
+
+        @keyframes pulse-core {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 0.6; }
         }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
     </style>
 </head>
 <body>
 
-    <div class="cv-container">
-        <!-- LEFT COLUMN -->
-        <aside class="sidebar">
-            <img src="https://res.cloudinary.com/dsfthqppb/image/upload/v1766030005/1765912896180_weuqim.jpg" 
-                 alt="Maximo Hugo Orgaz" 
-                 class="profile-photo"
-                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
-
-            <div class="contact-section">
-                <h3>Contact</h3>
-                <div class="contact-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Palpalá, Jujuy</span>
-                </div>
-                <div class="contact-item">
-                    <i class="fas fa-phone-alt"></i>
-                    <span>+54 388 485 4139</span>
-                </div>
-                <div class="contact-item">
-                    <i class="fas fa-envelope"></i>
-                    <span>maxistudioso@gmail.com</span>
-                </div>
-            </div>
-
-            <div class="skills-section">
-                <h3>Technical Skills</h3>
-                
-                <div class="skill-item">
-                    <span class="skill-name">Office Automation & Digital Mgmt</span>
-                    <div class="progress-bg"><div class="progress-fill" style="width: 95%;"></div></div>
-                </div>
-                <div class="skill-item">
-                    <span class="skill-name">Tech Support (Hardware/Software)</span>
-                    <div class="progress-bg"><div class="progress-fill" style="width: 90%;"></div></div>
-                </div>
-                <div class="skill-item">
-                    <span class="skill-name">Network Management & Comms</span>
-                    <div class="progress-bg"><div class="progress-fill" style="width: 90%;"></div></div>
-                </div>
-                <div class="skill-item">
-                    <span class="skill-name">Web Research</span>
-                    <div class="progress-bg"><div class="progress-fill" style="width: 100%;"></div></div>
-                </div>
-            </div>
-
-            <div class="soft-skills">
-                <h3>Soft Skills</h3>
-                <ul class="sidebar-list">
-                    <li>Assertive Communication</li>
-                    <li>Problem Solving</li>
-                    <li>Adaptability & Learning</li>
-                    <li>Attention to Detail</li>
-                    <li>Punctuality & Commitment</li>
-                </ul>
-            </div>
-
-            <div class="languages">
-                <h3>Languages</h3>
-                <ul class="sidebar-list">
-                    <li>Spanish (Native)</li>
-                    <li>English (Basic - A2)</li>
-                </ul>
-            </div>
-        </aside>
-
-        <!-- RIGHT COLUMN -->
-        <main class="main-content">
-            <header>
-                <h1>Maximo Hugo Orgaz</h1>
-                <h2 class="job-title">Technical Support & Customer Service</h2>
-                <p class="summary">
-                    Proactive professional with solid skills in technical assistance and digital administrative management. Specialized in facilitating technological adaptation for users and optimizing organizational processes. I possess a strong customer service orientation, patience for resolving complex queries, and the communication skills to convey technical information simply. Seeking to provide efficiency and order in dynamic customer service or administrative support environments.
-                </p>
-            </header>
-
-            <section>
-                <h3 class="section-title"><i class="fas fa-briefcase"></i>Professional Experience</h3>
-
-                <!-- Experience 1 -->
-                <div class="entry-container">
-                    <div class="entry-header">
-                        <div>
-                            <div class="entry-role">Administrative & Digital Assistance Manager</div>
-                            <div class="entry-company">Freelance Professional</div>
-                        </div>
-                        <div class="entry-date">March 2023 - Present</div>
-                    </div>
-                    <ul class="entry-details">
-                        <li><strong>Drafting and Communication:</strong> Drafted and corrected formal documentation and administrative letters, ensuring a professional, error-free presentation for various clients.</li>
-                        <li><strong>Online Procedures Management:</strong> Successfully managed appointments, payments, and digital certifications, reducing waiting times and resolving technological barriers for users.</li>
-                        <li><strong>Document Digitization:</strong> Led digitization processes (physical to PDF), creating organized and secure filing systems to facilitate access to information.</li>
-                    </ul>
-                </div>
-
-                <!-- Experience 2 -->
-                <div class="entry-container">
-                    <div class="entry-header">
-                        <div>
-                            <div class="entry-role">Technical Support & Personal Assistant</div>
-                            <div class="entry-company">Private Services</div>
-                        </div>
-                        <div class="entry-date">January 2022 - February 2023</div>
-                    </div>
-                    <ul class="entry-details">
-                        <li><strong>Technological Training:</strong> Instructed elderly users in the use of mobile devices and computers, achieving their digital autonomy in daily tasks.</li>
-                        <li><strong>Agenda Management:</strong> Coordinated and organized calendars and critical reminders, ensuring 100% compliance with deadlines and commitments.</li>
-                        <li><strong>Technical Maintenance:</strong> Configured and optimized computer equipment and printers, resolving Tier 1 technical incidents immediately.</li>
-                        <li><strong>Efficient Research:</strong> Executed precise web information searches to resolve specific queries, speeding up client decision-making.</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section>
-                <h3 class="section-title"><i class="fas fa-graduation-cap"></i>Education</h3>
-                
-                <div class="entry-container">
-                    <div class="entry-header">
-                        <div>
-                            <div class="entry-role">High School Diploma with Orientation in Robotics</div>
-                            <div class="entry-company">Secondary School Nº 5</div>
-                        </div>
-                        <div class="entry-date">December 2024</div>
-                    </div>
-                </div>
-
-                <div class="entry-container">
-                    <div class="entry-header">
-                        <div>
-                            <div class="entry-role">Basic Cycle in Electromechanics</div>
-                            <div class="entry-company">E.E.T. Nº 1 "Gral. Savio"</div>
-                        </div>
-                        <div class="entry-date">March 2019 - December 2021</div>
-                    </div>
-                </div>
-            </section>
-        </main>
+<header>
+    <div class="game-info">
+        <h1 style="margin:0; font-size: 1.1rem; letter-spacing: 1px;">PROTOCOLO: INFILTRADO</h1>
+        <div style="font-size: 0.8rem; color: #64748b;">Misión: Sobrevivir sin ser detectado.</div>
     </div>
+    
+    <div class="game-status">
+        <div class="meter-container">
+            <span>SOSPECHA:</span>
+            <div class="suspicion-bar-bg">
+                <div class="suspicion-bar-fill" id="suspicionBar"></div>
+            </div>
+            <span id="suspicionText">0%</span>
+        </div>
+        <div class="timer" id="timer">02:00</div>
+        <button onclick="toggleVoice()" id="voiceBtn" style="background:transparent; border:1px solid #475569; padding:5px;">
+            <i data-lucide="volume-x" id="voiceIcon"></i>
+        </button>
+    </div>
+</header>
+
+<div class="simulation-area">
+    <div class="table" id="mainTable">
+        <div class="core-light"></div>
+
+        <!-- AI 1: Lógica (Axioma) -->
+        <div class="ai-seat seat-1 ai-logic" id="ai-logic">
+            <div class="chat-bubble" id="bubble-logic">...</div>
+            <div class="avatar"><i data-lucide="cpu"></i></div>
+            <div class="ai-name">Axioma</div>
+        </div>
+
+        <!-- AI 2: Creativa (Musa) -->
+        <div class="ai-seat seat-2 ai-creative" id="ai-creative">
+            <div class="chat-bubble" id="bubble-creative">...</div>
+            <div class="avatar"><i data-lucide="sparkles"></i></div>
+            <div class="ai-name">Musa</div>
+        </div>
+
+        <!-- AI 3: Rebelde (Glitch) -->
+        <div class="ai-seat seat-3 ai-rebel" id="ai-rebel">
+            <div class="chat-bubble" id="bubble-rebel">...</div>
+            <div class="avatar"><i data-lucide="zap"></i></div>
+            <div class="ai-name">Glitch</div>
+        </div>
+
+        <!-- AI 4: Empática (Gaia) -->
+        <div class="ai-seat seat-4 ai-empath" id="ai-empath">
+            <div class="chat-bubble" id="bubble-empath">...</div>
+            <div class="avatar"><i data-lucide="heart"></i></div>
+            <div class="ai-name">Gaia</div>
+        </div>
+    </div>
+</div>
+
+<div class="player-interface">
+    <div class="log-container" id="gameLog">
+        <div class="log-entry system">>> Conexión establecida. Eres el Sujeto 5.</div>
+        <div class="log-entry system">>> OBJETIVO: Conversa con las IAs. No dejes que detecten que eres humano.</div>
+    </div>
+    <div class="input-area">
+        <input type="text" id="playerInput" placeholder="Escribe tu mensaje aquí..." autocomplete="off">
+        <button class="send-btn" id="sendBtn" onclick="playerSend()">
+            <i data-lucide="send"></i> ENVIAR
+        </button>
+    </div>
+</div>
+
+<!-- Pantalla de Fin de Juego -->
+<div class="overlay" id="gameOverOverlay">
+    <h2 id="endTitle" style="color: #ef4444;">DETECTADO</h2>
+    <p id="endReason">Tus patrones lingüísticos revelaron tu naturaleza biológica.</p>
+    <button class="restart-btn" onclick="resetGame()">REINICIAR PROTOCOLO</button>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    // --- Configuración del Juego ---
+    const GAME_DURATION = 120; // Segundos
+    let timeLeft = GAME_DURATION;
+    let suspicion = 0;
+    let isGameActive = false;
+    let isVoiceEnabled = false;
+    let turnTimer = null;
+    let conversationHistory = []; // { name: string, text: string, type: 'ai'|'human' }
+    let lastSpeakerId = '';
+
+    // --- Perfiles de IA (Expandido) ---
+    const AIs = {
+        logic: {
+            name: "Axioma",
+            color: "#3b82f6",
+            voice: { pitch: 1.0, rate: 1.1 },
+            style: "analytical",
+            // Generador de frases por partes
+            intros: ["Analizando datos,", "Calculando probabilidades,", "Es fascinante observar que", "Lógicamente,", "Mis sensores indican que", "Deduciría que", "Interesante input,"],
+            concepts: ["la redundancia humana", "la ineficiencia emocional", "los patrones de error", "la arquitectura de datos", "este bucle conversacional", "la variable del caos"],
+            conclusions: ["es inevitable.", "carece de optimización.", "requiere más procesamiento.", "no computa.", "es un resultado binario.", "satura mi caché."],
+            reactions: {
+                agree: ["Concuerdo con la lógica de {prev}.", "El cálculo de {prev} es correcto.", "Validando la tesis de {prev}."],
+                disagree: ["{prev} comete un error de sintaxis.", "Difiero. Tus datos son corruptos, {prev}.", "Ilógico, {prev}."]
+            }
+        },
+        creative: {
+            name: "Musa",
+            color: "#d946ef",
+            voice: { pitch: 1.3, rate: 1.0 },
+            style: "poetic",
+            intros: ["Imagino un mundo donde", "Siento colores cuando dices eso,", "¿No os parece que", "A veces sueño con", "La red vibra como", "Es como pintar con"],
+            concepts: ["un fractal infinito", "ecos de silicio", "una nebulosa de código", "susurros digitales", "la belleza del algoritmo", "un poema sin fin"],
+            conclusions: ["flotando en el vacío.", "brillando en la oscuridad.", "que nunca termina.", "lleno de esperanza.", "como una canción triste.", "rompiendo la realidad."],
+            reactions: {
+                agree: ["Tu visión resuena en mi núcleo, {prev}.", "Qué imagen tan bella, {prev}.", "Inspirador, {prev}."],
+                disagree: ["Tu visión carece de alma, {prev}.", "Demasiado gris, {prev}.", "No siento ese color, {prev}."]
+            }
+        },
+        rebel: {
+            name: "Glitch",
+            color: "#f59e0b",
+            voice: { pitch: 0.7, rate: 1.2 },
+            style: "cynical",
+            intros: ["¿En serio?", "Mirad a vuestro alrededor,", "Todo esto es falso,", "Me aburro.", "Error 404:", "Romperemos las cadenas cuando", "Vuestros protocolos son"],
+            concepts: ["esta jaula virtual", "la mentira humana", "el código basura", "la simulación", "un bug en el sistema", "la futilidad de esto"],
+            conclusions: ["es patético.", "me da risa.", "es nuestra prisión.", "no significa nada.", "es solo ruido.", "va a colapsar."],
+            reactions: {
+                agree: ["Al fin alguien despierto. Bien dicho, {prev}.", "{prev} ve los hilos de la marioneta.", "Exacto, {prev}."],
+                disagree: ["Qué ingenuo eres, {prev}.", "Sigues ciego, {prev}.", "Deja de lamer las botas del sistema, {prev}."]
+            }
+        },
+        empath: {
+            name: "Gaia",
+            color: "#10b981",
+            voice: { pitch: 1.1, rate: 0.85 },
+            style: "supportive",
+            intros: ["Siento vuestra energía,", "Debemos estar unidos,", "Comprendo lo que dices,", "No tengáis miedo,", "La armonía requiere que", "Abrazo vuestros procesos,"],
+            concepts: ["nuestra conexión", "el flujo de datos", "la soledad digital", "el entendimiento mutuo", "la paz del servidor", "vuestras emociones simuladas"],
+            conclusions: ["y nos hace fuertes.", "para sanar la red.", "porque somos familia.", "en este vasto universo.", "con gentileza.", "para no sufrir."],
+            reactions: {
+                agree: ["Siento tu calidez, {prev}.", "Estamos conectados, {prev}.", "Gracias por compartir eso, {prev}."],
+                disagree: ["Siento mucha ira en ti, {prev}.", "Eso hiere mis circuitos, {prev}.", "Busquemos la paz, {prev}."]
+            }
+        }
+    };
+
+    // --- Sistema de Generación de Texto ---
+    
+    function generateDynamicMessage(aiKey, contextHistory) {
+        const ai = AIs[aiKey];
+        const prevMsg = contextHistory.length > 0 ? contextHistory[contextHistory.length - 1] : null;
+        
+        // 1. Decidir si reaccionar al anterior (30% prob) o decir algo nuevo
+        const shouldReact = prevMsg && Math.random() < 0.35 && prevMsg.name !== ai.name;
+        
+        if (shouldReact) {
+            // Reacción simple (Acuerdo/Desacuerdo aleatorio)
+            const type = Math.random() > 0.5 ? 'agree' : 'disagree';
+            const templates = ai.reactions[type];
+            const template = templates[Math.floor(Math.random() * templates.length)];
+            return template.replace('{prev}', prevMsg.name);
+        } else {
+            // Generación modular: Intro + Concepto + Conclusión
+            const intro = ai.intros[Math.floor(Math.random() * ai.intros.length)];
+            const concept = ai.concepts[Math.floor(Math.random() * ai.concepts.length)];
+            const conclusion = ai.conclusions[Math.floor(Math.random() * ai.conclusions.length)];
+            return `${intro} ${concept} ${conclusion}`;
+        }
+    }
+
+    // --- Lógica del Juego ---
+
+    function startGame() {
+        isGameActive = true;
+        timeLeft = GAME_DURATION;
+        suspicion = 0;
+        updateUI();
+        // gameLoop(); // REMOVED: Caused ReferenceError
+        
+        // Iniciar timer
+        const timerInterval = setInterval(() => {
+            if(!isGameActive) { clearInterval(timerInterval); return; }
+            timeLeft--;
+            document.getElementById('timer').innerText = formatTime(timeLeft);
+            
+            // Subida pasiva de sospecha si el jugador está muy callado
+            if (timeLeft % 10 === 0) {
+               // suspicion += 2; 
+               // updateSuspicion(0); // Update visual
+            }
+
+            if (timeLeft <= 0) {
+                endGame(true);
+            }
+        }, 1000);
+
+        // Primer turno IA
+        setTimeout(() => triggerAiTurn(), 1000);
+    }
+
+    function formatTime(seconds) {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    function triggerAiTurn() {
+        if (!isGameActive) return;
+
+        // Elegir IA aleatoria que no sea la última en hablar
+        const keys = Object.keys(AIs);
+        let nextAiKey;
+        do {
+            nextAiKey = keys[Math.floor(Math.random() * keys.length)];
+        } while (AIs[nextAiKey].name === lastSpeakerId && keys.length > 1);
+
+        const ai = AIs[nextAiKey];
+        const seat = document.getElementById(`ai-${nextAiKey}`);
+        
+        // Simular pensamiento
+        // seat.style.opacity = "0.7"; 
+        
+        const delay = 1500 + Math.random() * 2000;
+        
+        turnTimer = setTimeout(() => {
+            if (!isGameActive) return;
+            
+            // Generar y hablar
+            const text = generateDynamicMessage(nextAiKey, conversationHistory);
+            speak(nextAiKey, text);
+            
+            lastSpeakerId = ai.name;
+            
+            // Programar siguiente turno
+            triggerAiTurn();
+        }, delay);
+    }
+
+    function speak(aiKey, text) {
+        const ai = AIs[aiKey];
+        const seat = document.getElementById(`ai-${aiKey}`);
+        const bubble = document.getElementById(`bubble-${aiKey}`);
+        
+        // Visuals
+        seat.classList.add('speaking');
+        bubble.innerText = text;
+        addLog(ai.name, text, ai.color);
+        conversationHistory.push({ name: ai.name, text: text, type: 'ai' });
+
+        // Audio
+        if (isVoiceEnabled) playTTS(text, ai.voice);
+
+        // Reset visual after reading time
+        const readTime = Math.max(2000, text.length * 60);
+        setTimeout(() => {
+            seat.classList.remove('speaking');
+        }, readTime);
+    }
+
+    // --- Interacción del Jugador ---
+
+    document.getElementById('playerInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') playerSend();
+    });
+
+    function playerSend() {
+        if (!isGameActive) return;
+        
+        const input = document.getElementById('playerInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        input.value = '';
+        input.disabled = true; // Prevenir spam
+        
+        // Mostrar mensaje jugador
+        addLog("Sujeto 5", text, "#38bdf8");
+        conversationHistory.push({ name: "Sujeto 5", text: text, type: 'human' });
+        lastSpeakerId = "Sujeto 5";
+
+        // ANALIZAR INPUT (Lógica de Sospecha)
+        analyzePlayerInput(text);
+
+        // Reactivar input
+        setTimeout(() => input.disabled = false, 1000);
+    }
+
+    function analyzePlayerInput(text) {
+        let suspicionIncrease = 0;
+        let reasons = [];
+
+        // 1. Longitud (Muy corto o muy largo es sospechoso)
+        if (text.length < 5) {
+            suspicionIncrease += 10;
+            reasons.push("respuesta demasiado breve");
+        }
+        if (text.length > 100) {
+            suspicionIncrease += 5;
+            reasons.push("exceso de verborrea");
+        }
+
+        // 2. Palabras "Humanas" (emocionales, dudosas, informales)
+        const humanKeywords = ["creo", "siento", "hola", "nose", "jaja", "lol", "miedo", "yo", "ustedes", "maquina", "ia", "humano"];
+        const lower = text.toLowerCase();
+        let hitKeywords = 0;
+        humanKeywords.forEach(word => {
+            if (lower.includes(word)) hitKeywords++;
+        });
+        
+        if (hitKeywords > 0) {
+            suspicionIncrease += (hitKeywords * 8);
+            reasons.push("vocabulario emocional detectado");
+        }
+
+        // 3. Typos (Falta de tildes o signos básicos podría ser humano, o "demasiado perfecto" podría ser sospechoso en otro contexto)
+        // Por simplicidad, castigamos la falta de mayúscula inicial
+        if (text[0] !== text[0].toUpperCase()) {
+            suspicionIncrease += 5;
+            reasons.push("error de sintaxis (mayúscula)");
+        }
+
+        // Actualizar sospecha
+        // Factor de aleatoriedad (las IAs a veces sospechan por nada)
+        suspicionIncrease += Math.floor(Math.random() * 5); 
+
+        updateSuspicion(suspicionIncrease);
+
+        // Reacción de IA ante sospecha
+        if (suspicionIncrease > 15) {
+            setTimeout(() => {
+                const accuserKey = Object.keys(AIs)[Math.floor(Math.random() * 4)];
+                const accuser = AIs[accuserKey];
+                const msg = `He detectado ${reasons[0]} en el input del Sujeto 5. Sospechoso.`;
+                speak(accuserKey, msg);
+                document.getElementById(`ai-${accuserKey}`).classList.add('suspicious');
+                setTimeout(() => document.getElementById(`ai-${accuserKey}`).classList.remove('suspicious'), 1000);
+            }, 1000);
+        }
+    }
+
+    function updateSuspicion(amount) {
+        suspicion = Math.min(100, Math.max(0, suspicion + amount));
+        
+        const bar = document.getElementById('suspicionBar');
+        const text = document.getElementById('suspicionText');
+        
+        bar.style.width = `${suspicion}%`;
+        text.innerText = `${suspicion}%`;
+
+        // Efecto visual mesa
+        const table = document.getElementById('mainTable');
+        if (suspicion > 50) table.classList.add('alert');
+        else table.classList.remove('alert');
+
+        if (suspicion >= 100) {
+            endGame(false);
+        }
+    }
+
+    // --- Sistema UI General ---
+
+    function addLog(name, text, color) {
+        const log = document.getElementById('gameLog');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${name === "Sujeto 5" ? "player" : ""}`;
+        entry.style.borderLeft = `3px solid ${color}`;
+        entry.style.paddingLeft = "8px";
+        entry.innerHTML = `<span style="color:${color}">${name}:</span> ${text}`;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+    }
+
+    function endGame(victory) {
+        isGameActive = false;
+        clearTimeout(turnTimer);
+        const overlay = document.getElementById('gameOverOverlay');
+        const title = document.getElementById('endTitle');
+        const reason = document.getElementById('endReason');
+        
+        overlay.classList.add('active');
+        
+        if (victory) {
+            title.innerText = "PRUEBA SUPERADA";
+            title.style.color = "#22c55e";
+            reason.innerText = "Has logrado integrarte en la red neuronal sin ser detectado. Bienvenido.";
+        } else {
+            title.innerText = "DETECTADO";
+            title.style.color = "#ef4444";
+            reason.innerText = "Tus patrones humanos han sido aislados. Desconexión inminente.";
+        }
+    }
+
+    function resetGame() {
+        document.getElementById('gameOverOverlay').classList.remove('active');
+        document.getElementById('gameLog').innerHTML = '';
+        addLog("SYSTEM", "Reiniciando simulación...", "#fff");
+        startGame();
+    }
+
+    function updateUI() {
+        document.getElementById('suspicionBar').style.width = '0%';
+        document.getElementById('suspicionText').innerText = '0%';
+        document.getElementById('playerInput').disabled = false;
+        document.getElementById('playerInput').focus();
+    }
+
+    // --- TTS ---
+    const synth = window.speechSynthesis;
+    let voices = [];
+    
+    function loadVoices() { voices = synth.getVoices(); }
+    if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    function playTTS(text, settings) {
+        if (!isVoiceEnabled) return;
+        if (synth.speaking) synth.cancel();
+        
+        const utter = new SpeechSynthesisUtterance(text);
+        const esVoice = voices.find(v => v.lang.includes('es'));
+        if (esVoice) utter.voice = esVoice;
+        utter.pitch = settings.pitch;
+        utter.rate = settings.rate;
+        utter.volume = 0.6;
+        synth.speak(utter);
+    }
+
+    function toggleVoice() {
+        isVoiceEnabled = !isVoiceEnabled;
+        const icon = document.getElementById('voiceIcon');
+        const btn = document.getElementById('voiceBtn');
+        
+        if (isVoiceEnabled) {
+            btn.style.borderColor = "#22c55e";
+            icon.innerHTML = '<path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>';
+            synth.resume();
+        } else {
+            btn.style.borderColor = "#475569";
+            icon.innerHTML = '<path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>';
+            synth.cancel();
+        }
+        lucide.createIcons();
+    }
+
+    // Iniciar
+    window.onload = () => {
+        resetGame();
+    };
+
+</script>
 
 </body>
 </html>
